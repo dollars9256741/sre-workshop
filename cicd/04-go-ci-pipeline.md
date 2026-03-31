@@ -4,6 +4,10 @@
 
 ---
 
+Ocean 成功跑完第一個 Hello World workflow 後信心大增。Andrew 看到後問他：「那你能幫我的 Go 專案也設一個自動化測試嗎？每次 push 完都要手動跑 `go test`，我已經受夠了。」Ocean 二話不說就接下了這個挑戰。
+
+---
+
 ## 目錄
 
 - [學習目標](#學習目標)
@@ -15,6 +19,7 @@
 - [Matrix Strategy](#matrix-strategy)
 - [Artifacts 深入](#artifacts-深入)
 - [實用技巧](#實用技巧)
+- [常見問題排解](#常見問題排解)
 - [小結與練習題](#小結與練習題)
 
 ---
@@ -138,7 +143,12 @@ func TestHomeHandler(t *testing.T) {
 }
 ```
 
-> 💡 **講師提示：** 如果學生之前上過 Docker 課程並接觸過類似的範例專案，可以快速帶過。重點放在 CI workflow 本身，而非 Go 程式碼的細節。
+<details>
+<summary>💡 講師提示</summary>
+
+> 如果學生之前上過 Docker 課程並接觸過類似的範例專案，可以快速帶過。重點放在 CI workflow 本身，而非 Go 程式碼的細節。
+
+</details>
 
 ---
 
@@ -205,7 +215,12 @@ jobs:
           path: bin/app
 ```
 
-> 💡 **講師提示：** 建議先展示完整的 workflow 檔案，讓學生有個全貌，接著再逐段解說。可以問學生：「看到這個檔案，你能猜出它做了哪些事情嗎？」
+<details>
+<summary>💡 講師提示</summary>
+
+> 建議先展示完整的 workflow 檔案，讓學生有個全貌，接著再逐段解說。可以問學生：「看到這個檔案，你能猜出它做了哪些事情嗎？」
+
+</details>
 
 ---
 
@@ -323,7 +338,12 @@ total:                              (statements)    93.3%
 - **80%** 表示有 20% 的程式碼路徑沒有被測試覆蓋
 - 一般來說，核心業務邏輯建議達到 **80% 以上** 的覆蓋率
 
-> 💡 **講師提示：** 提醒學生覆蓋率不是越高越好，重點是測試 **有意義的邏輯**，而非追求數字。100% 覆蓋率不代表沒有 bug。
+<details>
+<summary>💡 講師提示</summary>
+
+> 提醒學生覆蓋率不是越高越好，重點是測試 **有意義的邏輯**，而非追求數字。100% 覆蓋率不代表沒有 bug。
+
+</details>
 
 #### Artifact 上傳
 
@@ -419,7 +439,12 @@ Build Job 產出的 binary 透過 `upload-artifact` 上傳後，可以用於：
 - **Build** 會等到 Lint 和 Test **都通過** 後才開始
 - 如果 Lint 或 Test 任何一個失敗，Build **不會執行**
 
-> 💡 **講師提示：** 可以在 GitHub Actions 頁面上展示這個依賴關係圖。GitHub 會自動根據 `needs` 設定，在 workflow run 頁面上以圖形化的方式呈現 job 之間的關係。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以在 GitHub Actions 頁面上展示這個依賴關係圖。GitHub 會自動根據 `needs` 設定，在 workflow run 頁面上以圖形化的方式呈現 job 之間的關係。
+
+</details>
 
 ---
 
@@ -477,7 +502,7 @@ Build Job 產出的 binary 透過 `upload-artifact` 上傳後，可以用於：
 | `go` | 用來標識這是 Go 的快取 |
 | `${{ hashFiles('**/go.sum') }}` | 根據 `go.sum` 的內容產生 hash，依賴有變就更新快取 |
 
-`restore-keys` 是備用 key——如果完全匹配的快取不存在，會嘗試用前綴匹配找到最近的快取。這比從零開始下載好很多。
+`restore-keys` 是備用 key，如果完全匹配的快取不存在，會嘗試用前綴匹配找到最近的快取。這比從零開始下載好很多。
 
 ### 快取效果
 
@@ -486,7 +511,12 @@ Build Job 產出的 binary 透過 `upload-artifact` 上傳後，可以用於：
 | **無快取（第一次）** | ~30–60 秒 | 需要從網路下載所有依賴 |
 | **有快取（後續執行）** | ~2–5 秒 | 直接從快取還原 |
 
-> 💡 **講師提示：** 可以實際展示兩次 CI run 的時間差異。第一次 run 後，在不改動 `go.mod` 的情況下再觸發一次，讓學生看到快取帶來的速度提升。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以實際展示兩次 CI run 的時間差異。第一次 run 後，在不改動 `go.mod` 的情況下再觸發一次，讓學生看到快取帶來的速度提升。
+
+</details>
 
 ---
 
@@ -550,7 +580,12 @@ strategy:
 | 跨平台工具，需要在多個 OS 上測試 | 只部署到 Linux 伺服器 |
 | 需要測試不同資料庫版本的相容性 | 只使用一種資料庫 |
 
-> 💡 **講師提示：** 對於學生的練習專案，通常不需要 matrix。但了解這個功能在開源專案和企業專案中非常重要。可以展示一些知名 Go 開源專案的 CI 設定，讓學生看到 matrix 的實際應用。
+<details>
+<summary>💡 講師提示</summary>
+
+> 對於學生的練習專案，通常不需要 matrix。但了解這個功能在開源專案和企業專案中非常重要。可以展示一些知名 Go 開源專案的 CI 設定，讓學生看到 matrix 的實際應用。
+
+</details>
 
 ---
 
@@ -728,9 +763,36 @@ concurrency:
 | `group` | 同一個 group 的 run 會互斥 |
 | `cancel-in-progress: true` | 新的 run 啟動時，**取消** 正在執行的舊 run |
 
-這在 PR workflow 中特別有用——當你在短時間內推了多個 commit 到 PR，只需要跑 **最新那次** 的 CI 就好，前面的可以取消。
+這在 PR workflow 中特別有用，當你在短時間內推了多個 commit 到 PR，只需要跑 **最新那次** 的 CI 就好，前面的可以取消。
 
-> 💡 **講師提示：** `concurrency` 是一個進階功能，如果時間不夠可以先跳過。但建議讓學生知道它的存在，因為在實際專案中很常用。
+<details>
+<summary>💡 講師提示</summary>
+
+> `concurrency` 是一個進階功能，如果時間不夠可以先跳過。但建議讓學生知道它的存在，因為在實際專案中很常用。
+
+</details>
+
+---
+
+## 常見問題排解
+
+#### 1. `go test` 在 CI 通過但本地失敗（或反過來）
+
+最常見的原因是 **Race Detector** 的行為差異。CI 中使用 `-race` flag，但你本地可能沒加。另一個原因是環境差異，例如 Go 版本不同、作業系統不同。
+
+**排解方式**：在本地也用 `go test -race ./...` 來跑測試，確保行為一致。
+
+#### 2. golangci-lint 報錯但本地沒事
+
+可能是 golangci-lint 版本不同。CI 中用 `version: latest` 會拿到最新版，但你本地可能是舊版。
+
+**排解方式**：在 `.golangci.yml` 中鎖定你要的規則，或在 CI 中指定 golangci-lint 的版本號而非 `latest`。
+
+#### 3. Cache 沒有生效
+
+第一次跑一定沒有 cache。如果後續執行 cache 還是沒命中，檢查 `go.sum` 是否有變動。`setup-go` 用 `go.sum` 的 hash 作為 cache key，只要 `go.sum` 有改動，cache 就會失效。
+
+**排解方式**：在 Actions log 中搜尋 "cache" 關鍵字，查看 cache hit 或 miss 的訊息。
 
 ---
 
@@ -749,30 +811,9 @@ concurrency:
 
 ### 練習題
 
-**練習 1：加入 `go vet` 檢查**
+完成以下練習來鞏固本章所學：
 
-在 CI workflow 的 test job 中，在 `Run tests` 步驟之前，加入一個新的步驟來執行 `go vet`：
-
-```yaml
-- name: Run go vet
-  run: go vet ./...
-```
-
-`go vet` 是 Go 內建的靜態分析工具，可以檢查常見的程式錯誤（如 `fmt.Printf` 的格式化字串與參數不匹配等）。
-
-**練習 2：使用 Matrix 測試多個 Go 版本**
-
-修改 test job，使用 matrix strategy 同時在 Go 1.21 和 Go 1.22 上執行測試。完成後，觀察 GitHub Actions 頁面上會出現幾個 test job。
-
-提示：
-
-```yaml
-strategy:
-  matrix:
-    go-version: ['1.21', '1.22']
-```
-
-記得把 `setup-go` 的 `go-version` 改為 `${{ matrix.go-version }}`。
+👉 [練習二：CI Pipeline 實戰練習](exercises/exercise-02-ci-pipeline.md)（練習 2-1 至 2-2）
 
 > **接下來，我們將學習如何在 Pull Request 中自動進行程式碼檢查！**
 

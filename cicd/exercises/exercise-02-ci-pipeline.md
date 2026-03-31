@@ -249,8 +249,8 @@ git checkout -b feature/add-info-endpoint
 在 `handler.go` 中新增一個 handler 函式：
 
 ```go
-// handleInfo returns application metadata.
-func handleInfo(w http.ResponseWriter, r *http.Request) {
+// InfoHandler returns application metadata.
+func InfoHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]string{
         "app":         "sample-app",
@@ -263,7 +263,7 @@ func handleInfo(w http.ResponseWriter, r *http.Request) {
 然後在 `main.go` 中註冊這個 handler：
 
 ```go
-mux.HandleFunc("GET /info", handleInfo)
+mux.HandleFunc("/info", InfoHandler)
 ```
 
 #### Step 3：撰寫測試
@@ -271,10 +271,10 @@ mux.HandleFunc("GET /info", handleInfo)
 在 `handler_test.go` 中新增測試：
 
 ```go
-func TestHandleInfo(t *testing.T) {
+func TestInfoHandler(t *testing.T) {
     req := httptest.NewRequest(http.MethodGet, "/info", nil)
     w := httptest.NewRecorder()
-    handleInfo(w, req)
+    InfoHandler(w, req)
 
     if w.Code != http.StatusOK {
         t.Errorf("expected status 200, got %d", w.Code)

@@ -18,7 +18,7 @@
 
 ### 目標
 
-完成一次完整的 **release 流程**——從建立 Git tag 到 GitHub Release 頁面出現 binary 和 changelog。
+完成一次完整的 **release 流程**，從建立 Git tag 到 GitHub Release 頁面出現 binary 和 changelog。
 
 ### 要求
 
@@ -478,7 +478,7 @@ jobs:
 
 2. **Docker Image 安全性**：在 CI 中建置的 Docker image，你會做哪些安全掃描？（提示：搜尋 Trivy、Snyk 等工具。）
 
-3. **Composite Action vs Reusable Workflow**：GitHub Actions 提供了兩種程式碼重用機制——composite action 和 reusable workflow。它們的差異是什麼？各自適合什麼場景？
+3. **Composite Action vs Reusable Workflow**：GitHub Actions 提供了兩種程式碼重用機制，分別是 composite action 和 reusable workflow。它們的差異是什麼？各自適合什麼場景？
 
 4. **GitOps**：如果你的部署不是直接在 CI 中執行 `gcloud run deploy`，而是修改一個 Git repository 中的 Kubernetes manifest，然後讓 ArgoCD 自動同步，這種模式叫什麼？它有什麼優勢？
 

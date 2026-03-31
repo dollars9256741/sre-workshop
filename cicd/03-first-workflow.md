@@ -4,6 +4,8 @@
 
 ---
 
+Ocean 聽完 Snow 的介紹後迫不及待想動手試試。「光聽不練沒有用，我們直接來寫一個 workflow 吧！」Snow 說。Ocean 打開終端機，準備建立他人生中第一個 GitHub Actions workflow。
+
 ## 目錄
 
 - [學習目標](#學習目標)
@@ -50,7 +52,12 @@
    - **Initialize this repository with**：勾選 **「Add a README file」**
 3. 點擊 **「Create repository」** 按鈕
 
-> 💡 **講師提示：** 建議在投影幕上同步操作，讓學生跟著一步一步做。如果有學生還沒有 GitHub 帳號，可以讓他們先觀看示範，課後再自行練習。
+<details>
+<summary>💡 講師提示</summary>
+
+> 建議在投影幕上同步操作，讓學生跟著一步一步做。如果有學生還沒有 GitHub 帳號，可以讓他們先觀看示範，課後再自行練習。
+
+</details>
 
 ### 將 Repository Clone 到本機
 
@@ -74,7 +81,12 @@ GitHub Actions 的 workflow 檔案必須放在 `.github/workflows/` 目錄下。
 mkdir -p .github/workflows
 ```
 
-> 💡 **講師提示：** 提醒學生 `.github` 是以「點」開頭的隱藏目錄，在檔案管理器中可能看不到。在終端機中可以用 `ls -a` 來查看。
+<details>
+<summary>💡 講師提示</summary>
+
+> 提醒學生 `.github` 是以「點」開頭的隱藏目錄，在檔案管理器中可能看不到。在終端機中可以用 `ls -a` 來查看。
+
+</details>
 
 ### 建立 Workflow 檔案
 
@@ -162,7 +174,7 @@ jobs:
   run: echo "Hello, GitHub Actions! 🚀"
 ```
 
-最簡單的步驟——用 `run` 執行一行 shell 指令。`name` 是步驟的名稱，會顯示在執行記錄中。
+最簡單的步驟，就是用 `run` 執行一行 shell 指令。`name` 是步驟的名稱，會顯示在執行記錄中。
 
 **Step 2：Show System Info**
 
@@ -192,7 +204,12 @@ jobs:
 
 使用 `${{ }}` 表達式存取 **GitHub 提供的上下文資訊**。這些資訊在後面的章節會經常用到，例如自動在 commit message 中標示 SHA、在部署時判斷分支等。
 
-> 💡 **講師提示：** 逐段解說時，可以讓學生先不看教材，嘗試猜測每個部分的意思。這樣可以加深印象。
+<details>
+<summary>💡 講師提示</summary>
+
+> 逐段解說時，可以讓學生先不看教材，嘗試猜測每個部分的意思。這樣可以加深印象。
+
+</details>
 
 ---
 
@@ -237,7 +254,12 @@ git push origin main
 
 點擊任何一個步驟可以展開查看詳細的輸出內容。試著點開 **Show System Info** 看看 Runner 上裝了什麼版本的 Go 和 Docker。
 
-> 💡 **講師提示：** 讓學生實際在自己的 repository 中操作，並比較彼此的 `github.actor` 和 `github.sha` 是否不同。這可以幫助他們理解 context 的動態特性。
+<details>
+<summary>💡 講師提示</summary>
+
+> 讓學生實際在自己的 repository 中操作，並比較彼此的 `github.actor` 和 `github.sha` 是否不同。這可以幫助他們理解 context 的動態特性。
+
+</details>
 
 ---
 
@@ -360,7 +382,12 @@ git push origin main
 
 回到 Actions 分頁，確認新的 workflow run 又回到 **綠色勾勾** ✅。
 
-> 💡 **講師提示：** 這是一個很好的教學點——讓學生親自體驗「紅轉綠」的過程，建立「失敗 → 排查 → 修復 → 成功」的 CI 心態。可以告訴學生：「在真實工作中，看到紅色不要慌張，CI 的目的就是在問題到達正式環境之前就攔截下來。」
+<details>
+<summary>💡 講師提示</summary>
+
+> 這是一個很好的教學點，讓學生親自體驗「紅轉綠」的過程，建立「失敗、排查、修復、成功」的 CI 心態。可以告訴學生：「在真實工作中，看到紅色不要慌張，CI 的目的就是在問題到達正式環境之前就攔截下來。」
+
+</details>
 
 ---
 
@@ -513,7 +540,12 @@ jobs:
         # Output: I'm from step level
 ```
 
-> 💡 **講師提示：** 讓學生動手把「環境變數三層級」的範例加到自己的 workflow 中實際跑一次，觀察各層級變數的存取行為。這比單純看教材更容易理解。
+<details>
+<summary>💡 講師提示</summary>
+
+> 讓學生動手把「環境變數三層級」的範例加到自己的 workflow 中實際跑一次，觀察各層級變數的存取行為。這比單純看教材更容易理解。
+
+</details>
 
 ---
 
@@ -589,7 +621,12 @@ on:
     branches: [master]  # ← change to match your default branch
 ```
 
-> 💡 **講師提示：** YAML 縮排錯誤是學生最常遇到的問題。建議請學生安裝 VS Code 的 YAML 擴充套件（如 Red Hat 的 YAML 套件），它能即時標示語法錯誤。另外也可以推薦安裝 GitHub Actions 擴充套件，它提供 workflow 檔案的語法高亮與自動補全。
+<details>
+<summary>💡 講師提示</summary>
+
+> YAML 縮排錯誤是學生最常遇到的問題。建議請學生安裝 VS Code 的 YAML 擴充套件（如 Red Hat 的 YAML 套件），它能即時標示語法錯誤。另外也可以推薦安裝 GitHub Actions 擴充套件，它提供 workflow 檔案的語法高亮與自動補全。
+
+</details>
 
 ---
 
@@ -606,21 +643,9 @@ on:
 
 ### 練習題
 
-**練習 1：自訂你的 Workflow**
+完成以下練習來鞏固本章所學：
 
-修改 `hello.yml`，在 `greeting` job 中加入以下步驟：
-
-1. 印出 `"My name is <your-name>"` 的訊息
-2. 印出目前的工作目錄（提示：使用 `pwd` 指令）
-3. 列出工作目錄中的所有檔案（提示：使用 `ls -la` 指令）
-
-**練習 2：多 Job Workflow**
-
-建立一個新的 workflow 檔案 `.github/workflows/multi-job.yml`，包含兩個 job：
-
-1. 第一個 job 名為 `info`，印出 GitHub context 的各項資訊
-2. 第二個 job 名為 `greet`，印出 `"Workflow completed successfully!"`
-3. 讓 `greet` job **等待** `info` job 完成後才執行（提示：使用 `needs` 關鍵字）
+👉 [練習一：GitHub Actions 基礎練習](exercises/exercise-01-basics.md)（練習 1-1 至 1-3）
 
 > **接下來，我們要為一個真正的 Go 專案建立 CI Pipeline！**
 

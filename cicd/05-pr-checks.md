@@ -4,6 +4,10 @@
 
 ---
 
+Ocean 把 CI pipeline 設好之後很得意，直接在 main 分支上改了一段程式碼就 push 上去。結果 Andrew 隔天一拉程式碼，發現 build 壞了。Snow 搖搖頭說：「你不能讓每個人都直接 push 到 main 啊，我來教你怎麼用 PR 檢查保護主分支。」
+
+---
+
 ## 目錄
 
 - [學習目標](#學習目標)
@@ -15,6 +19,7 @@
 - [PR 範本（Pull Request Template）](#pr-範本pull-request-template)
 - [Branch Protection Rules](#branch-protection-rules)
 - [Status Checks 的運作方式](#status-checks-的運作方式)
+- [常見問題排解](#常見問題排解)
 - [小結與練習題](#小結與練習題)
 
 ---
@@ -73,7 +78,12 @@
 
 這些機制確保每一行進入 `main` 的程式碼都經過了品質把關。
 
-> 💡 **講師提示：** 可以問學生：「你有沒有遇過改了一個地方，結果其他功能壞掉的經驗？」用實際情境引導他們理解自動化檢查的價值。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以問學生：「你有沒有遇過改了一個地方，結果其他功能壞掉的經驗？」用實際情境引導他們理解自動化檢查的價值。
+
+</details>
 
 ---
 
@@ -101,7 +111,12 @@ on:
 | `ready_for_review` | 從 Draft 變成 Ready 時 | 適合只在正式 review 時才跑的檢查 |
 | `closed` | PR 被關閉或合併時 | 可用於清理資源 |
 
-> 💡 **講師提示：** 如果不指定 `types`，GitHub 預設只會在 `opened`、`synchronize`、`reopened` 三種情況下觸發，這通常就夠用了。
+<details>
+<summary>💡 講師提示</summary>
+
+> 如果不指定 `types`，GitHub 預設只會在 `opened`、`synchronize`、`reopened` 三種情況下觸發，這通常就夠用了。
+
+</details>
 
 ### PR Workflow 與 Push Workflow 的差異
 
@@ -112,7 +127,7 @@ on:
 | 目的 | 確認分支上的程式碼正確 | 確認合併後不會壞掉 |
 | 適用場景 | 持續整合 | 合併前的品質把關 |
 
-一個重要的細節：PR workflow 會在 **merge commit** 上執行——也就是說，它測試的不只是你的 PR 程式碼，而是「你的修改合併進目標分支後的結果」。這樣可以及早發現合併衝突或不相容的問題。
+一個重要的細節：PR workflow 會在 **merge commit** 上執行，測試的不只是你的 PR 程式碼，而是「你的修改合併進目標分支後的結果」。這樣可以及早發現合併衝突或不相容的問題。
 
 ### PR 的安全限制
 
@@ -209,7 +224,7 @@ permissions:
 | `pull-requests: write` | 允許在 PR 上留言或更新 status |
 | `checks: write` | 允許建立 check run 結果 |
 
-遵循 **最小權限原則**——只給 workflow 需要的權限，不多給。
+遵循 **最小權限原則**，只給 workflow 需要的權限，不多給。
 
 #### Lint Job — 程式碼風格檢查
 
@@ -251,7 +266,12 @@ lint:
 2. **印出覆蓋率**：方便在 log 中查看
 3. **門檻檢查**：如果覆蓋率低於 60%，就用 `::error::` 語法在 GitHub Actions 中顯示錯誤訊息，並以 `exit 1` 讓 job 失敗
 
-> 💡 **講師提示：** `::error::` 是 GitHub Actions 的 **Workflow Command**，可以在 Actions UI 中顯示錯誤訊息。類似的還有 `::warning::` 和 `::notice::`。60% 只是範例門檻，實際專案中可以根據團隊情況調整。
+<details>
+<summary>💡 講師提示</summary>
+
+> `::error::` 是 GitHub Actions 的 **Workflow Command**，可以在 Actions UI 中顯示錯誤訊息。類似的還有 `::warning::` 和 `::notice::`。60% 只是範例門檻，實際專案中可以根據團隊情況調整。
+
+</details>
 
 #### Build Check Job — 建置與依賴檢查
 
@@ -262,7 +282,7 @@ lint:
     git diff --exit-code go.mod go.sum
 ```
 
-這段檢查非常實用——它確保 `go.mod` 和 `go.sum` 是「乾淨」的：
+這段檢查非常實用，它確保 `go.mod` 和 `go.sum` 是「乾淨」的：
 
 1. 先執行 `go mod tidy`（清理不需要的依賴、補齊缺少的依賴）
 2. 再用 `git diff --exit-code` 檢查是否有差異
@@ -345,7 +365,12 @@ jobs:
 
 使用 `github-pr-review` 的好處是 reviewer 不需要切到 CI log 去看錯誤，**直接在 diff 的對應行就能看到問題**，大幅提升 review 效率。
 
-> 💡 **講師提示：** 如果有 GitHub 帳號可以直接展示 Reviewdog 在 PR 上的效果，讓學生看到自動 comment 出現在 diff 上，會非常直覺。
+<details>
+<summary>💡 講師提示</summary>
+
+> 如果有 GitHub 帳號可以直接展示 Reviewdog 在 PR 上的效果，讓學生看到自動 comment 出現在 diff 上，會非常直覺。
+
+</details>
 
 ---
 
@@ -480,7 +505,12 @@ tests:
 | 忘記跑測試或 lint | Checklist 提醒 |
 | 不知道如何測試這個變更 | 明確的測試說明 |
 
-> 💡 **講師提示：** 可以展示一些知名開源專案（如 Kubernetes、Go 本身）的 PR 範本，讓學生知道這在業界是標準做法。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以展示一些知名開源專案（如 Kubernetes、Go 本身）的 PR 範本，讓學生知道這在業界是標準做法。
+
+</details>
 
 ---
 
@@ -542,7 +572,12 @@ tests:
 **Step 6：儲存**
 1. 點擊 **Create** 按鈕儲存規則
 
-> 💡 **講師提示：** 建議在課堂上實際操作一次設定流程，讓學生看到完整的畫面。如果是免費的 GitHub 帳號，某些功能（如 required reviewers 數量 > 1）可能需要升級方案才能使用。
+<details>
+<summary>💡 講師提示</summary>
+
+> 建議在課堂上實際操作一次設定流程，讓學生看到完整的畫面。如果是免費的 GitHub 帳號，某些功能（如 required reviewers 數量 > 1）可能需要升級方案才能使用。
+
+</details>
 
 ---
 
@@ -628,6 +663,24 @@ jobs:
 
 ---
 
+## 常見問題排解
+
+### 1. 設定 Branch Protection 後自己也不能 push
+
+這是正常的！Branch Protection 設計上就是要阻止所有人（包括管理員）直接 push 到受保護的分支。你需要透過 PR 來合併程式碼。
+
+如果你勾選了 **Do not allow bypassing the above settings**，連 repository 管理員都必須遵守規則。如果你想在緊急情況下保留繞過的能力，可以不勾這個選項。
+
+### 2. Status Check 搜尋不到 workflow 的 job 名稱
+
+Status check 只有在 workflow **至少執行過一次** 之後才會出現在搜尋清單中。如果你剛建立 workflow 還沒觸發過，先 push 一次讓它跑完，再回來設定 Branch Protection。
+
+### 3. Fork PR 的 CI 檢查失敗
+
+從 fork 提交的 PR 無法存取 repository 的 secrets，所以如果你的 CI 步驟需要 secrets（例如推送 Docker image），這些步驟會失敗。解法是把需要 secrets 的步驟用 `if: github.event.pull_request.head.repo.full_name == github.repository` 條件跳過。
+
+---
+
 ## 小結與練習題
 
 ### 本章重點回顧
@@ -646,20 +699,9 @@ jobs:
 
 ### 練習題
 
-**練習 1：新增覆蓋率門檻**
+完成以下練習來鞏固本章所學：
 
-在前一章建立的 CI workflow 中，參考本章的 `Check coverage threshold` 步驟，為 test job 加入覆蓋率門檻檢查。將門檻設為 50%，然後故意移除一些測試，看看 CI 是否會失敗。
-
-**練習 2：建立 PR 範本**
-
-在你的 repository 中建立 `.github/pull_request_template.md`，根據本章提供的範例，自訂一個適合你的專案的 PR 範本。然後建立一個新的 PR，驗證範本是否會自動出現在描述欄位中。
-
-**練習 3：設定 Branch Protection**
-
-到你的 repository 的 Settings → Branches 中，為 `main` 分支設定 Branch Protection Rules：
-1. 要求 PR 才能合併（Require a pull request before merging）
-2. 要求至少一個 status check 通過
-3. 設定完成後，嘗試直接 push 到 `main`，確認是否會被拒絕
+👉 [練習二：CI Pipeline 實戰練習](exercises/exercise-02-ci-pipeline.md)（練習 2-3 至 2-4）
 
 > **接下來，我們將學習如何在打 Git Tag 後自動建立 Release 並發佈建置產物！**
 

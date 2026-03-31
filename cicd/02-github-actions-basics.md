@@ -4,6 +4,10 @@
 
 ---
 
+Snow 告訴 Ocean：「CI/CD 的概念你大概懂了，接下來要認識我們的主角，GitHub Actions。」Ocean 打開電腦，準備開始學怎麼寫自己的第一個自動化流程。
+
+---
+
 ## 目錄
 
 - [GitHub Actions 是什麼？](#github-actions-是什麼)
@@ -29,7 +33,12 @@
 
 簡單來說：**你只要把一個 YAML 檔案放進 repository，GitHub 就會幫你自動執行裡面定義的任務。**
 
-> 💡 **講師提示：** 可以先打開一個有 GitHub Actions 的 repository，讓學生看到 Actions 分頁的介面，建立初步印象。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以先打開一個有 GitHub Actions 的 repository，讓學生看到 Actions 分頁的介面，建立初步印象。
+
+</details>
 
 ---
 
@@ -142,7 +151,12 @@ steps:
   - 例如：`actions/checkout@v4`
   - 建議固定版本（用 `@v4` 而非 `@main`），避免未預期的變更
 
-> 💡 **講師提示：** 可以用「樂高積木」的比喻——每個 Action 都是一塊積木，你可以把不同的積木組合起來，拼出你要的 pipeline。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以用「樂高積木」的比喻，每個 Action 都是一塊積木，你可以把不同的積木組合起來，拼出你要的 pipeline。
+
+</details>
 
 ### 6. Runner（執行器）
 
@@ -207,7 +221,12 @@ Workflow (.github/workflows/ci.yml)
     └── Step 2 — run: ./deploy.sh
 ```
 
-> 💡 **講師提示：** 建議在白板上畫出這個階層關係，一邊畫一邊說明。強調 Workflow 包含 Job，Job 包含 Step，Step 使用 Action 或執行指令。
+<details>
+<summary>💡 講師提示</summary>
+
+> 建議在白板上畫出這個階層關係，一邊畫一邊說明。強調 Workflow 包含 Job，Job 包含 Step，Step 使用 Action 或執行指令。
+
+</details>
 
 ---
 
@@ -256,7 +275,12 @@ jobs:
 | 10 | `- name: Say Hello` | 為這個步驟取一個名稱 |
 | 11 | `run: echo "Hello, GitHub Actions!"` | 執行一段 shell 指令 |
 
-> 💡 **講師提示：** 可以在 GitHub 上即時建立這個 workflow 檔案並 push，讓學生在 Actions 分頁中看到它被觸發並執行的過程。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以在 GitHub 上即時建立這個 workflow 檔案並 push，讓學生在 Actions 分頁中看到它被觸發並執行的過程。
+
+</details>
 
 ---
 
@@ -296,7 +320,12 @@ on:
     branches: [main]
 ```
 
-> 💡 **講師提示：** `paths` 篩選器非常實用——例如只修改了文件不需要重新跑測試。可以提醒學生善用這個功能來節省 CI 資源。
+<details>
+<summary>💡 講師提示</summary>
+
+> `paths` 篩選器非常實用，例如只修改了文件就不需要重新跑測試。可以提醒學生善用這個功能來節省 CI 資源。
+
+</details>
 
 ---
 
@@ -376,10 +405,12 @@ GitHub 提供免費的雲端 Runner，不需要自行架設伺服器。
 
 | Runner 標籤 | 作業系統 | 說明 |
 |-------------|---------|------|
-| `ubuntu-latest` | Ubuntu 22.04 | 最常用，建議預設選擇 |
+| `ubuntu-latest` | Ubuntu (最新 LTS) | 最常用，建議預設選擇 |
 | `ubuntu-24.04` | Ubuntu 24.04 | 指定特定 Ubuntu 版本 |
-| `windows-latest` | Windows Server 2022 | 需要 Windows 環境時使用 |
-| `macos-latest` | macOS 14 (Sonoma) | 需要 macOS 環境時使用（例如 iOS 開發） |
+| `windows-latest` | Windows Server | 需要 Windows 環境時使用 |
+| `macos-latest` | macOS | 需要 macOS 環境時使用（例如 iOS 開發） |
+
+> `*-latest` 標籤對應的實際版本會隨時間更新，請參考 [GitHub 官方文件](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners) 確認目前的版本。
 
 ### 預裝的軟體
 
@@ -424,7 +455,12 @@ GitHub-hosted Runner 已預裝大量常用軟體，包括：
 | API 請求頻率 | 每個 repository 每小時 1,000 次 |
 | 同時執行的 job 數量 | Free 方案最多 20 個 |
 
-> 💡 **講師提示：** 對於學生來說，使用公開 repository 基本上不需要擔心額度問題。建議學生在練習時使用公開 repository。
+<details>
+<summary>💡 講師提示</summary>
+
+> 對於學生來說，使用公開 repository 基本上不需要擔心額度問題。建議學生在練習時使用公開 repository。
+
+</details>
 
 ---
 
@@ -529,7 +565,23 @@ steps:
 | `runner.os` | Runner 的作業系統（如 `Linux`） |
 | `secrets.GITHUB_TOKEN` | GitHub 自動提供的認證 token |
 
-> 💡 **講師提示：** 不需要讓學生記住所有變數。重點是讓他們知道 `${{ }}` 語法，以及在需要時去哪裡查。可以引導他們到 [GitHub Actions 官方文件](https://docs.github.com/en/actions/learn-github-actions/contexts) 查閱完整變數列表。
+<details>
+<summary>💡 講師提示</summary>
+
+> 不需要讓學生記住所有變數。重點是讓他們知道 `${{ }}` 語法，以及在需要時去哪裡查。可以引導他們到 [GitHub Actions 官方文件](https://docs.github.com/en/actions/learn-github-actions/contexts) 查閱完整變數列表。
+
+</details>
+
+### `GITHUB_TOKEN` 的權限範圍
+
+`secrets.GITHUB_TOKEN` 是 GitHub 在每次 workflow 執行時自動產生的臨時 token，不需要你手動設定。它的預設權限取決於 repository 的設定，但你可以在 workflow 中用 `permissions` 關鍵字明確限縮權限。
+
+重點：
+
+- 這個 token 在 workflow 結束後就會失效
+- 它的權限只限於觸發 workflow 的 repository
+- 如果你需要存取其他 repository，就需要使用 Personal Access Token (PAT)
+- 建議在每個 workflow 中都明確設定 `permissions`，遵循最小權限原則
 
 ---
 

@@ -58,8 +58,8 @@ jobs:
 
       - name: Show My Info
         run: |
-          echo "Name: Wang Xiao-Ming"
-          echo "Student ID: B10901001"
+          echo "Name: <your-name>"
+          echo "Student ID: <your-student-id>"
 
       - name: Checkout Repository
         uses: actions/checkout@v4

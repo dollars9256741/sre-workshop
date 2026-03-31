@@ -4,6 +4,10 @@
 
 ---
 
+Andrew 的專案終於穩定了，他想發布第一個正式版本讓其他人使用。Ocean 問他：「那你要怎麼發布？手動打包然後上傳嗎？」Andrew 苦笑著說上次手動打包花了半小時，還忘了編譯 Windows 版本。Snow 說：「讓 CI 來幫你自動化 release 流程吧。」
+
+---
+
 ## 目錄
 
 - [學習目標](#學習目標)
@@ -15,6 +19,7 @@
 - [Changelog 自動產生](#changelog-自動產生)
 - [Docker Image 建置與推送](#docker-image-建置與推送)
 - [進階：使用 GoReleaser](#進階使用-goreleaser)
+- [常見問題排解](#常見問題排解)
 - [小結與練習題](#小結與練習題)
 
 ---
@@ -76,7 +81,12 @@ v 1  .  2  .  3
 | 修正 `/health` 回傳格式 bug | `v1.1.0` → `v1.1.1` | 修正 bug |
 | 將 `/version` 的 JSON 結構改變 | `v1.1.1` → `v2.0.0` | 原本的使用者程式碼會壞掉，是 breaking change |
 
-> 💡 **講師提示：** 可以用「手機 App 更新」來比喻——PATCH 像是修 bug 的小更新、MINOR 像是新增功能的更新、MAJOR 像是整個 UI 大改版到你找不到原本功能的更新。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以用「手機 App 更新」來比喻。PATCH 像是修 bug 的小更新、MINOR 像是新增功能的更新、MAJOR 像是整個 UI 大改版到你找不到原本功能的更新。
+
+</details>
 
 ---
 
@@ -142,7 +152,12 @@ git tag -d v1.0.0
 git push origin --delete v1.0.0
 ```
 
-> 💡 **講師提示：** 建議現場操作一次 tag 的建立和推送流程，讓學生看到 tag 推送後 GitHub 上的 Tags 頁面會出現新的 tag。
+<details>
+<summary>💡 講師提示</summary>
+
+> 建議現場操作一次 tag 的建立和推送流程，讓學生看到 tag 推送後 GitHub 上的 Tags 頁面會出現新的 tag。
+
+</details>
 
 ---
 
@@ -426,7 +441,12 @@ $ curl http://localhost:8080/version
 {"version":"v1.0.0"}
 ```
 
-> 💡 **講師提示：** 可以現場示範 `go build` 和 `go build -ldflags ...` 的差異，然後分別 curl `/version` endpoint，讓學生看到版本的變化。這是一個非常實用的技巧，在業界廣泛使用。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以現場示範 `go build` 和 `go build -ldflags ...` 的差異，然後分別 curl `/version` endpoint，讓學生看到版本的變化。這是一個非常實用的技巧，在業界廣泛使用。
+
+</details>
 
 ---
 
@@ -434,7 +454,7 @@ $ curl http://localhost:8080/version
 
 ### GOOS 和 GOARCH 的組合
 
-Go 的一大優勢是 **內建跨平台編譯**——不需要安裝任何額外工具，只要設定 `GOOS` 和 `GOARCH` 環境變數，就能在一台機器上編譯出其他平台的 binary。
+Go 的一大優勢是 **內建跨平台編譯**，不需要安裝任何額外工具，只要設定 `GOOS` 和 `GOARCH` 環境變數，就能在一台機器上編譯出其他平台的 binary。
 
 | GOOS | GOARCH | 對應平台 |
 |------|--------|---------|
@@ -553,6 +573,8 @@ Release workflow 中的 changelog 產生步驟會從 git log 中提取兩個 tag
 
 它會附加在你自訂的 `body` 之後，兩者結合提供完整的 release 資訊。
 
+> **注意**：當你同時使用自訂的 `body` 和 `generate_release_notes: true` 時，GitHub 會把自動產生的 release notes 附加在你的 `body` 內容之後。如果你的自訂 changelog 和自動產生的內容有大量重複，可以考慮只使用其中一種。建議初學時直接用 `generate_release_notes: true` 就好，等有更進階的需求再自訂 changelog。
+
 ### 進階：使用 Conventional Commits 自動分類
 
 如果你的團隊使用 [Conventional Commits](https://www.conventionalcommits.org/) 格式（例如 `feat:`, `fix:`, `docs:`），可以進一步自動分類 changelog：
@@ -572,7 +594,12 @@ Release workflow 中的 changelog 產生步驟會從 git log 中提取兩個 tag
 
 這可以透過工具如 [git-cliff](https://github.com/orhun/git-cliff) 或 GoReleaser 的 changelog 功能來實現。
 
-> 💡 **講師提示：** 可以連結回前面課程提到的 Conventional Commits 概念。好的 commit message 不只是讓 git log 好看，還能自動化產生有意義的 changelog。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以連結回前面課程提到的 Conventional Commits 概念。好的 commit message 不只是讓 git log 好看，還能自動化產生有意義的 changelog。
+
+</details>
 
 ---
 
@@ -679,7 +706,12 @@ docker:
       └──────────────────┘
 ```
 
-> 💡 **講師提示：** 可以提醒學生，因為 Docker 課程已經學過 Dockerfile 的撰寫，這裡的重點是「如何在 CI 中自動建置並推送 image」，而不是 Dockerfile 本身。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以提醒學生，因為 Docker 課程已經學過 Dockerfile 的撰寫，這裡的重點是「如何在 CI 中自動建置並推送 image」，而不是 Dockerfile 本身。
+
+</details>
 
 ---
 
@@ -792,7 +824,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-只需要 **一個 step** 就完成了所有 release 工作——cross compilation、changelog、GitHub Release、Docker image，全部由 GoReleaser 處理。
+只需要 **一個 step** 就完成了所有 release 工作：cross compilation、changelog、GitHub Release、Docker image，全部由 GoReleaser 處理。
 
 ### GoReleaser vs 手動設定
 
@@ -804,7 +836,28 @@ jobs:
 | **維護成本** | 需要維護多個 workflow 步驟 | 只需維護一個設定檔 |
 | **推薦場景** | 學習、簡單專案 | 正式專案、需要多功能 release |
 
-> 💡 **講師提示：** 建議學生先用手動設定的方式學習，了解每個步驟的原理後，再進階使用 GoReleaser。這樣遇到問題時才知道要從哪裡 debug。
+<details>
+<summary>💡 講師提示</summary>
+
+> 建議學生先用手動設定的方式學習，了解每個步驟的原理後，再進階使用 GoReleaser。這樣遇到問題時才知道要從哪裡 debug。
+
+</details>
+
+---
+
+## 常見問題排解
+
+### 1. Push 了 tag 但 workflow 沒有觸發
+
+常見原因：
+
+- Tag 不是在 default branch（通常是 `main`）上建立的。確認你先切到 `main` 並且程式碼是最新的。
+- Tag 名稱不符合 `v*` 的 pattern。例如 `1.0.0` 不會觸發，必須是 `v1.0.0`。
+- Workflow 檔案本身還沒有 push 到 `main`。GitHub 只會讀取 default branch 上的 workflow 定義。
+
+### 2. Cross compilation 失敗
+
+如果你的程式碼使用了 CGO（例如 `import "C"` 或依賴 SQLite），cross compilation 會失敗。解法是設定 `CGO_ENABLED=0`，或者為每個目標平台使用對應的 Runner。
 
 ---
 
@@ -823,29 +876,9 @@ jobs:
 
 ### 練習題
 
-**練習 1：建立你的第一個 Release**
+完成以下練習來鞏固本章所學：
 
-1. 將前面章節建立的 workflow 全部 push 到 GitHub
-2. 把本章的 `release.yml` 加入 `.github/workflows/`
-3. 修改 `main.go`，加入 `var version = "dev"` 變數，並在 `VersionHandler` 中使用它
-4. Commit 並 push 到 `main`
-5. 建立一個 annotated tag：`git tag -a v1.0.0 -m "First release"`
-6. 推送 tag：`git push origin v1.0.0`
-7. 到 GitHub Actions 頁面觀察 Release workflow 的執行過程
-8. 到 Releases 頁面查看自動建立的 Release 和上傳的 binary
-
-**練習 2：修改版號並發佈新版本**
-
-1. 在 `handler.go` 中新增一個 `/ping` endpoint，回傳 `{"pong": true}`
-2. 新增對應的測試
-3. Commit 並 push
-4. 思考：這個變更應該 bump 哪個版號？（答案：MINOR，因為是新增功能）
-5. 建立 tag `v1.1.0` 並推送
-6. 觀察新的 Release 中的 changelog 是否包含了新增 `/ping` endpoint 的 commit
-
-**練習 3（進階）：加入 Docker Image 建置**
-
-將本章的 Docker build & push job 加入你的 release workflow 中。push tag 後，到 GitHub 的 Packages 頁面確認 Docker image 是否成功推送。
+👉 [練習三：進階練習](exercises/exercise-03-advanced.md)（練習 3-1 至 3-2）
 
 > **接下來，我們將學習如何將應用程式部署到雲端平台，讓你的程式真正上線運行！**
 

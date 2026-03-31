@@ -99,13 +99,23 @@ cicd/
 ├── 05-pr-checks.md                    # PR 檢查自動化
 ├── 06-release-automation.md           # Release 自動化
 ├── 07-deployment.md                   # 部署到雲端平台
+├── assets/                            # 圖表資源
+│   └── git-flow-diagram.png           # Git Flow 分支模型示意圖
 ├── examples/                          # 範例程式碼
+│   ├── .github/
+│   │   └── workflows/                 # 範例 workflow 檔案
+│   │       ├── hello.yml              # Hello World workflow
+│   │       ├── ci.yml                 # Go CI pipeline
+│   │       ├── pr-check.yml           # PR 檢查自動化
+│   │       ├── release.yml            # Release 自動化
+│   │       └── deploy.yml             # 部署到 Cloud Run
 │   └── sample-app/                    # 範例 Go 應用程式
 │       ├── main.go                    # 主程式進入點
 │       ├── handler.go                 # HTTP handler
 │       ├── handler_test.go            # 測試檔案
 │       ├── go.mod                     # Go module 定義
-│       └── Dockerfile                 # Docker 映像檔定義
+│       ├── Dockerfile                 # Docker 映像檔定義
+│       └── .golangci.yml              # golangci-lint 設定
 └── exercises/                         # 練習題
     ├── exercise-01-basics.md          # 章節 01-03 練習
     ├── exercise-02-ci-pipeline.md     # 章節 04-05 練習
@@ -114,4 +124,4 @@ cicd/
 
 ## 範例專案說明
 
-`examples/sample-app` 是一個簡單的 **Go HTTP API 伺服器**，提供基本的 RESTful API 端點。這個專案會在整個工作坊中作為示範與練習的基礎，你將學會如何為它建立完整的 CI/CD pipeline——從自動化測試、程式碼品質檢查、Docker 映像檔建置，到自動部署。
+`examples/sample-app` 是一個簡單的 **Go HTTP API 伺服器**，提供基本的 RESTful API 端點。這個專案會在整個工作坊中作為示範與練習的基礎，你將學會如何為它建立完整的 CI/CD pipeline，從自動化測試、程式碼品質檢查、Docker 映像檔建置，到自動部署。

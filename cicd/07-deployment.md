@@ -15,7 +15,11 @@
 - [部署通知](#部署通知)
 - [Rollback（回滾）策略](#rollback回滾策略)
 - [安全最佳實踐](#安全最佳實踐)
+- [常見問題排解](#常見問題排解)
 - [小結與練習題](#小結與練習題)
+- [完整 CI/CD Pipeline 全景圖](#完整-cicd-pipeline-全景圖)
+
+Ocean 的 CI pipeline 跑得很順，Release 也自動化了。Andrew 興奮地說：「那接下來就是把程式部署到伺服器上讓大家用了吧？」Ocean 點點頭，但又有點緊張，畢竟部署到正式環境可不能出差錯。Snow 說：「別擔心，我們可以設計一套安全的部署流程，先部署到測試環境驗證，確認沒問題再上正式環境。」
 
 ---
 
@@ -119,7 +123,12 @@ env:
   API_KEY: "sk-abc123xyz789"  # NEVER do this!
 ```
 
-> 💡 **講師提示：** 可以提醒學生，即使是 private repository，也不應該把 secret 直接寫在程式碼中。因為 git history 會永久保留，一旦 commit 了就很難完全清除。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以提醒學生，即使是 private repository，也不應該把 secret 直接寫在程式碼中。因為 git history 會永久保留，一旦 commit 了就很難完全清除。
+
+</details>
 
 ---
 
@@ -235,7 +244,12 @@ Instance 3  ████████████████ 舊 █████
 | Blue-Green | 無 | 低 | 中高 | 需要快速回滾 |
 | Canary | 無 | 最低 | 高 | 高流量、高風險變更 |
 
-> 💡 **講師提示：** 對於入門學生，可以用「餐廳翻新」來比喻——Recreate 就是關門裝潢、Rolling Update 就是一間一間改、Blue-Green 就是旁邊蓋新的再搬過去、Canary 就是先讓少數客人試用新環境。
+<details>
+<summary>💡 講師提示</summary>
+
+> 對於入門學生，可以用「餐廳翻新」來比喻。Recreate 就是關門裝潢、Rolling Update 就是一間一間改、Blue-Green 就是旁邊蓋新的再搬過去、Canary 就是先讓少數客人試用新環境。
+
+</details>
 
 ---
 
@@ -321,7 +335,7 @@ on:
 - **push to main**：當程式碼合併到 `main` 時自動部署
 - **workflow_dispatch**：允許在 GitHub UI 上 **手動觸發** 部署（在 Actions 頁面會出現 "Run workflow" 按鈕）
 
-`workflow_dispatch` 非常實用——在需要重新部署但不想改程式碼時，可以手動觸發。
+`workflow_dispatch` 非常實用，在需要重新部署但不想改程式碼時，可以手動觸發。
 
 #### Environment 設定
 
@@ -351,7 +365,7 @@ permissions:
     service_account: ${{ secrets.SA_EMAIL }}
 ```
 
-使用 **Workload Identity Federation (WIF)** 認證。WIF 是一種不需要管理長期金鑰的認證方式——GitHub Actions 向 GCP 出示自己的 OIDC token，GCP 驗證後授予臨時權限。
+使用 **Workload Identity Federation (WIF)** 認證。WIF 是一種不需要管理長期金鑰的認證方式，GitHub Actions 向 GCP 出示自己的 OIDC token，GCP 驗證後授予臨時權限。
 
 這比傳統的 service account key 更安全，因為：
 - 不需要儲存長期的金鑰
@@ -379,7 +393,12 @@ permissions:
 
 使用 `${{ github.sha }}` 作為 image tag，確保每次部署都使用唯一的、可追溯的 tag。
 
-> 💡 **講師提示：** 如果沒有 GCP 帳號也沒關係，重點是讓學生理解部署 workflow 的結構和概念。實際的 GCP 設定可以在課後作為延伸練習。
+<details>
+<summary>💡 講師提示</summary>
+
+> 如果沒有 GCP 帳號也沒關係，重點是讓學生理解部署 workflow 的結構和概念。實際的 GCP 設定可以在課後作為延伸練習。
+
+</details>
 
 ---
 
@@ -476,7 +495,12 @@ Fly.io 的 `flyctl deploy` 會自動讀取專案中的 `fly.toml` 和 `Dockerfil
 | **Vercel** | 零配置部署 | 個人免費 | 前端、Serverless |
 | **Fly.io** | 開發者友善 | 免費 3 個小型 VM | 後端、Side project |
 
-> 💡 **講師提示：** 根據學生的背景選擇重點介紹的平台。如果學生未來會接觸 GCP，就重點講 Cloud Run；如果是做 side project，Fly.io 可能更實用。
+<details>
+<summary>💡 講師提示</summary>
+
+> 根據學生的背景選擇重點介紹的平台。如果學生未來會接觸 GCP，就重點講 Cloud Run；如果是做 side project，Fly.io 可能更實用。
+
+</details>
 
 ---
 
@@ -607,7 +631,12 @@ jobs:
 
 設定完成後，當 workflow 執行到 `deploy-production` job 時，會出現一個等待核准的畫面，核准者需要到 GitHub Actions 頁面點擊 **Approve and deploy** 才會繼續。
 
-> 💡 **講師提示：** 可以現場展示等待核准的畫面。如果時間允許，讓兩位學生組隊，一個人 push code 觸發部署，另一個人去核准。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以現場展示等待核准的畫面。如果時間允許，讓兩位學生組隊，一個人 push code 觸發部署，另一個人去核准。
+
+</details>
 
 ---
 
@@ -672,7 +701,12 @@ jobs:
 - **包含關鍵資訊**：服務名稱、版本（commit SHA）、部署者、commit 訊息
 - **失敗時附上 log 連結**：方便快速排查問題
 
-> 💡 **講師提示：** Slack webhook 的設定步驟可以在課後補充說明。重點是讓學生理解「部署後通知團隊」這個概念。如果團隊不用 Slack，也可以用 Discord、Microsoft Teams 或 email 的 Action。
+<details>
+<summary>💡 講師提示</summary>
+
+> Slack webhook 的設定步驟可以在課後補充說明。重點是讓學生理解「部署後通知團隊」這個概念。如果團隊不用 Slack，也可以用 Discord、Microsoft Teams 或 email 的 Action。
+
+</details>
 
 ---
 
@@ -760,7 +794,12 @@ Image tags in registry:
   gcr.io/my-project/my-app:i7j8k9l  ← 目前有問題的版本
 ```
 
-> 💡 **講師提示：** 可以提醒學生，回滾只是 **暫時的應急措施**。回滾後還是需要找出問題、修復、然後重新部署。重點是「先止血」。
+<details>
+<summary>💡 講師提示</summary>
+
+> 可以提醒學生，回滾只是 **暫時的應急措施**。回滾後還是需要找出問題、修復、然後重新部署。重點是「先止血」。
+
+</details>
 
 ---
 
@@ -780,7 +819,7 @@ permissions:
 permissions: write-all
 ```
 
-同樣的原則也適用於 GCP/AWS 的 service account——只給部署所需的權限，不要給 admin。
+同樣的原則也適用於 GCP/AWS 的 service account，只給部署所需的權限，不要給 admin。
 
 ### 2. 定期輪換 Secrets
 
@@ -806,8 +845,8 @@ permissions: write-all
 
 | 方式 | 安全性 | 管理成本 |
 |------|--------|---------|
-| **長期金鑰（Service Account Key）** | 低——金鑰可能洩漏 | 高——需要輪換 |
-| **OIDC（Workload Identity Federation）** | 高——臨時 token 自動過期 | 低——不需要管理金鑰 |
+| **長期金鑰（Service Account Key）** | 低，金鑰可能洩漏 | 高，需要輪換 |
+| **OIDC（Workload Identity Federation）** | 高，臨時 token 自動過期 | 低，不需要管理金鑰 |
 
 我們在 Cloud Run 部署 workflow 中使用的 `google-github-actions/auth@v2` 就是用 OIDC 方式。
 
@@ -830,7 +869,43 @@ permissions: write-all
 | ✅ 定期輪換 secrets | 設定提醒，定期更換 |
 | ✅ 保留部署紀錄 | 透過通知和 audit log 追蹤 |
 
-> 💡 **講師提示：** 安全是一個很大的主題，這裡只列出最基本的幾個重點。可以鼓勵有興趣的學生去看 GitHub 的 [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions) 官方文件。
+<details>
+<summary>💡 講師提示</summary>
+
+> 安全是一個很大的主題，這裡只列出最基本的幾個重點。可以鼓勵有興趣的學生去看 GitHub 的 [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions) 官方文件。
+
+</details>
+
+---
+
+## 常見問題排解
+
+### 1. GCP 認證失敗
+
+最常見的原因是 Workload Identity Federation 的設定不正確。確認以下幾點：
+- `WIF_PROVIDER` 和 `SA_EMAIL` 兩個 secrets 都已正確設定
+- Service account 有部署到 Cloud Run 的權限
+- Workload Identity Pool 有允許你的 GitHub repository
+
+如果是第一次設定，建議先參考 [Google 的官方教學](https://cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines)。
+
+### 2. 部署成功但 Smoke Test 失敗
+
+可能是 Cloud Run 的新版本還沒完全啟動就開始打 health check。可以在 curl 前加一個短暫的等待，或用 retry 機制：
+
+```bash
+for i in 1 2 3 4 5; do
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${URL}/health)
+  if [ "$STATUS" = "200" ]; then
+    echo "Health check passed!"
+    exit 0
+  fi
+  echo "Attempt $i: got ${STATUS}, retrying in 10s..."
+  sleep 10
+done
+echo "Health check failed after 5 attempts"
+exit 1
+```
 
 ---
 
@@ -849,47 +924,55 @@ permissions: write-all
 
 ### 練習題
 
-**練習 1：設計你的部署流程**
+完成以下練習來鞏固本章所學：
 
-在紙上畫出一個包含以下步驟的部署流程圖：
-1. PR 合併到 `main`
-2. 自動部署到 staging
-3. 在 staging 上執行 smoke test
-4. 手動核准後部署到 production
-5. 部署完成後發送通知
+👉 [練習三：進階練習](exercises/exercise-03-advanced.md)（練習 3-3）
 
-標示出哪些步驟是自動的、哪些需要人工介入。
+---
 
-**練習 2：設定 GitHub Environments**
+### 完整 CI/CD Pipeline 全景圖
 
-1. 在你的 repository 中建立兩個 environment：`staging` 和 `production`
-2. 為 `production` 設定 **Required reviewers**（加入你自己或你的組員）
-3. 建立一個簡單的 workflow，分別部署到兩個環境（可以用 `echo` 模擬部署）
-4. 推送後觀察 production 部署是否會暫停等待核准
+恭喜你完成了整個 CI/CD 工作坊！讓我們回顧一下，你現在已經有能力建立這樣一套完整的自動化流程：
 
-提示：
-
-```yaml
-jobs:
-  staging:
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - run: echo "Deploying to staging..."
-
-  production:
-    needs: staging
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - run: echo "Deploying to production..."
+```
+開發者 push 程式碼
+        │
+        ▼
+┌───────────────────────────────────────────────────────┐
+│                   CI Pipeline (ch04)                   │
+│                                                       │
+│  ┌──────┐  ┌──────┐                                  │
+│  │ Lint │  │ Test │  ← 平行執行                       │
+│  └──┬───┘  └──┬───┘                                  │
+│     └────┬────┘                                      │
+│          ▼                                           │
+│     ┌─────────┐                                      │
+│     │  Build  │                                      │
+│     └─────────┘                                      │
+└───────────────────────────────────────────────────────┘
+        │
+        │ PR 合併到 main
+        ▼
+┌───────────────────────────────────────────────────────┐
+│              Release 自動化 (ch06)                     │
+│                                                       │
+│  git tag v1.0.0 ──▶ 多平台 Binary + Docker Image     │
+│                 ──▶ GitHub Release + Changelog         │
+└───────────────────────────────────────────────────────┘
+        │
+        ▼
+┌───────────────────────────────────────────────────────┐
+│                  CD Pipeline (ch07)                    │
+│                                                       │
+│  ┌──────────┐    ┌──────────┐    ┌──────────────┐    │
+│  │ Deploy   │───▶│ Smoke    │───▶│ Deploy       │    │
+│  │ Staging  │    │ Test     │    │ Production   │    │
+│  │ (自動)   │    │          │    │ (手動核准)    │    │
+│  └──────────┘    └──────────┘    └──────────────┘    │
+└───────────────────────────────────────────────────────┘
 ```
 
-**練習 3（進階）：建立 Rollback Workflow**
-
-參考本章的 rollback workflow 範例，建立一個使用 `workflow_dispatch` 的 rollback workflow。使用 `echo` 模擬實際的回滾操作，讓 workflow 接受一個 commit SHA 作為輸入參數。
-
-> **恭喜你完成了 GitHub Actions CI/CD 的完整教學！你已經學會了從 CI 到 CD 的全部流程。**
+從寫程式碼到部署上線，每個環節都有自動化的品質把關。這就是 CI/CD 的力量。
 
 ---
 
