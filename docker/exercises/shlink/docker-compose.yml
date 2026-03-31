@@ -41,6 +41,8 @@ services:
       - "traefik.http.routers.shlink-api.tls=true"
       - "traefik.http.routers.shlink-api.tls.certresolver=cloudflare"
       - "traefik.http.services.shlink-api.loadbalancer.server.port=8080"
+    ports:
+      - "8080:8080"
     networks:
       - traefik
       - shlink-net
@@ -58,6 +60,8 @@ services:
       - "traefik.http.routers.shlink-web.tls=true"
       - "traefik.http.routers.shlink-web.tls.certresolver=cloudflare"
       - "traefik.http.services.shlink-web.loadbalancer.server.port=8080"
+    ports:
+      - "9080:8080"
     networks:
       - traefik
 
