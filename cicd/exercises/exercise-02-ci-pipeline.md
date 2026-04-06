@@ -60,7 +60,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
 
       # === New checks start here ===
       - name: Run go vet
@@ -113,7 +113,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Build binary
         run: go build -o bin/app ./...
       - name: Upload binary
@@ -143,9 +143,9 @@ jobs:
 ### 要求
 
 1. 修改（或建立新的）workflow，在 test job 中使用 matrix strategy
-2. 測試 **Go 1.21** 和 **Go 1.22** 兩個版本
+2. 測試 **Go 1.23** 和 **Go 1.24** 兩個版本
 3. 測試 **ubuntu-latest** 和 **macos-latest** 兩個作業系統
-4. 使用 `include` 額外加入一個 **Go 1.22 + windows-latest** 的組合
+4. 使用 `include` 額外加入一個 **Go 1.24 + windows-latest** 的組合
 5. 在測試步驟中印出目前的 **Go 版本** 和 **作業系統**
 
 ### 提示
@@ -162,11 +162,11 @@ jobs:
 
 | Job | Go Version | OS |
 |-----|-----------|-----|
-| Test (Go 1.21, ubuntu-latest) | 1.21 | ubuntu-latest |
-| Test (Go 1.21, macos-latest) | 1.21 | macos-latest |
-| Test (Go 1.22, ubuntu-latest) | 1.22 | ubuntu-latest |
-| Test (Go 1.22, macos-latest) | 1.22 | macos-latest |
-| Test (Go 1.22, windows-latest) | 1.22 | windows-latest |
+| Test (Go 1.23, ubuntu-latest) | 1.23 | ubuntu-latest |
+| Test (Go 1.23, macos-latest) | 1.23 | macos-latest |
+| Test (Go 1.24, ubuntu-latest) | 1.24 | ubuntu-latest |
+| Test (Go 1.24, macos-latest) | 1.24 | macos-latest |
+| Test (Go 1.24, windows-latest) | 1.24 | windows-latest |
 
 <details>
 <summary>點擊查看答案</summary>
@@ -186,10 +186,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: ['1.21', '1.22']
+        go-version: ['1.23', '1.24']
         os: [ubuntu-latest, macos-latest]
         include:
-          - go-version: '1.22'
+          - go-version: '1.24'
             os: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -211,7 +211,7 @@ jobs:
 **重點說明：**
 
 - `fail-fast: false` 設定讓所有 matrix job 都會執行完畢，即使其中一個失敗。這樣你可以看到完整的測試結果，知道是哪些環境有問題。
-- `include` 不會覆蓋原本的組合，而是**額外增加**一個 Go 1.22 + windows-latest 的組合。
+- `include` 不會覆蓋原本的組合，而是**額外增加**一個 Go 1.24 + windows-latest 的組合。
 - 如果某些環境的測試會失敗（例如路徑分隔符在 Windows 上不同），你可以用 `exclude` 排除特定組合。
 - job 名稱中使用 `${{ matrix.go-version }}` 和 `${{ matrix.os }}` 讓每個 job 的名稱都不一樣，方便辨識。
 
@@ -381,7 +381,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -394,7 +394,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
 
       - name: Run tests with coverage
         run: go test -v -race -coverprofile=coverage.out ./...
@@ -440,7 +440,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Build binary
         run: go build -o bin/app ./...
       - name: Upload binary

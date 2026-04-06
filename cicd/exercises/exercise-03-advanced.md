@@ -152,7 +152,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -165,7 +165,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Run tests
         run: go test -v -race -coverprofile=coverage.out ./...
       - name: Show coverage
@@ -179,7 +179,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Build binary
         run: go build -o bin/app ./...
       - name: Upload binary
@@ -342,7 +342,7 @@ jobs:
    - Checkout 程式碼
    - 安裝指定版本的 Go
    - 下載 Go module dependencies
-3. 接受 `go-version` 作為 **input 參數**（預設值為 `1.22`）
+3. 接受 `go-version` 作為 **input 參數**（預設值為 `1.24`）
 4. 在 CI workflow 中使用這個自訂 action
 
 ### 提示
@@ -372,7 +372,7 @@ inputs:
   go-version:
     description: 'Go version to install'
     required: false
-    default: '1.22'
+    default: '1.24'
 
 runs:
   using: composite
@@ -415,7 +415,7 @@ jobs:
       - name: Setup Go Project
         uses: ./.github/actions/setup-go-project
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -428,7 +428,7 @@ jobs:
       - name: Setup Go Project
         uses: ./.github/actions/setup-go-project
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Run tests
         run: go test -v -race -coverprofile=coverage.out ./...
       - name: Show coverage
@@ -447,7 +447,7 @@ jobs:
       - name: Setup Go Project
         uses: ./.github/actions/setup-go-project
         with:
-          go-version: '1.22'
+          go-version: '1.24'
       - name: Build binary
         run: go build -o bin/app ./...
       - name: Upload binary

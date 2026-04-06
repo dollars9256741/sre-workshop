@@ -14,7 +14,7 @@ A **2-hour** hands-on workshop on GitHub Actions, starting from CI/CD fundamenta
 
 - [ ] **GitHub account** — sign up at [github.com](https://github.com) if needed
 - [ ] **Git** installed — `git --version`
-- [ ] **Go 1.22+** installed — `go version`
+- [ ] **Go 1.24+** installed — `go version`
 - [ ] **Docker** installed — `docker --version`
 - [ ] **Editor** — [VS Code](https://code.visualstudio.com/) recommended (with YAML extension)
 - [ ] (Optional) **[act](https://github.com/nektos/act)** — test GitHub Actions workflows locally
@@ -41,12 +41,10 @@ cicd/
 ├── README.md                          # This file
 ├── README.zh-TW.md                    # Chinese version
 ├── 01-cicd-intro.md                   # CI/CD concepts
-├── 02-github-actions-basics.md        # GitHub Actions fundamentals
-├── 03-first-workflow.md               # Hands-on: first workflow
-├── 04-go-ci-pipeline.md               # Go CI pipeline
-├── 05-pr-checks.md                    # PR check automation
-├── 06-release-automation.md           # Release automation
-├── 07-deployment.md                   # Cloud deployment
+├── 02-github-actions-basics.md        # GitHub Actions fundamentals + hands-on
+├── 03-go-ci-pipeline.md               # Go CI pipeline
+├── 04-release-automation.md           # Release automation
+├── 05-deployment.md                   # Cloud deployment
 ├── examples/                          # Example code
 │   └── sample-app/                    # Sample Go application
 │       ├── main.go                    # Entry point
