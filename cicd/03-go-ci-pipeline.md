@@ -153,7 +153,7 @@ on:
 此外，有一個容易被忽略的細節值得特別說明：當 `pull_request` 事件被觸發時，GitHub Actions 實際執行的並不是分支上的 commit，而是**將該分支模擬合併進 `main` 後所產生的 merge commit**。這樣的設計讓測試結果反映的是合併後的實際狀態，因此合併衝突或相容性問題能在 PR 階段就被及早發現。
 
 
-> **先講一個共通點**：接下來三個 job（lint、test、build）的前兩個 step 都是 `actions/checkout` 和 `actions/setup-go`。這不是贅寫——**每個 job 都跑在全新的 runner 上**，前一個 job 下載的程式碼和安裝的 Go 到了下一個 job 就不存在了，所以每個 job 都要自己從零準備一次。也正是因為這個隔離性，跨 job 傳檔案才要靠 artifact（待會兒的 Test Job 會介紹）。
+> **先講一個共通點**：接下來三個 job（lint、test、build）的前兩個 step 都是 `actions/checkout` 和 `actions/setup-go`。這不是贅寫。**每個 job 都跑在全新的 runner 上**，前一個 job 下載的程式碼和安裝的 Go 到了下一個 job 就不存在了，所以每個 job 都要自己從零準備一次。也正是因為這個隔離性，跨 job 傳檔案才要靠 artifact（待會兒的 Test Job 會介紹）。
 
 ### Lint Job — 程式碼品質檢查
 
@@ -270,7 +270,7 @@ Test job 還有一個 Go 開發者常順手加上的小檢查，放在 `go test`
   run: go mod verify
 ```
 
-`go mod verify` 會比對本地 module cache 和 `go.sum` 裡記錄的 hash，確認依賴套件沒被偷改過——成本極低、有問題就早點發現。練習題會讓你動手把它加進 `ci.yml`。
+`go mod verify` 會比對本地 module cache 和 `go.sum` 裡記錄的 hash，確認依賴套件沒被偷改過。成本極低，有問題就早點發現。練習題會讓你動手把它加進 `ci.yml`。
 
 
 ### Build Job — 建置可執行檔
