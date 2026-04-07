@@ -133,6 +133,8 @@ jobs:
 ```
 
 > 完整檔案也可以在 `cicd/examples/sample-app/.github/workflows/ci.yml` 找到，直接複製過去即可。
+>
+> 小提醒：因為 sample-app 是這個 workshop repo 裡的一個子目錄，GitHub Actions 不會直接執行子目錄底下的 workflow。實際在 workshop repo 本身跑的是 `.github/workflows/sample-app-ci.yml`，內容和這裡幾乎一樣，但多了 `paths` 過濾（只在 `cicd/examples/sample-app/**` 變動時觸發）和 `defaults.run.working-directory`（讓指令跑在 sample-app 子目錄裡）。對你自己的專案來說用不到這兩項額外設定，照本章範例貼過去就好。
 
 ## 逐段解說
 
