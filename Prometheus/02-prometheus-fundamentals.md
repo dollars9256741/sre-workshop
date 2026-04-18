@@ -1,10 +1,10 @@
-# 02 — Prometheus 核心概念
+# 02 — Prometheus
 
 ---
 
 ## 目錄
 
-- [02 — Prometheus 核心概念](#02--prometheus-核心概念)
+- [02 — Prometheus](#02--prometheus)
   - [目錄](#目錄)
   - [Prometheus 是什麼？ (pruh·mee·thee·uhs)](#prometheus-是什麼-pruhmeetheeuhs)
   - [Pull-based vs. Push-based](#pull-based-vs-push-based)
@@ -84,7 +84,7 @@ Pull-based（Prometheus）:
 
 ### Core Components
 
-我們的 monitoring 系統由四個核心元件組成，每個元件各司其職：
+我們的 monitoring 系統由四個元件組成，每個元件各司其職：
 
 | 元件 | 負責什麼 | 類比 |
 |------|---------|------|
