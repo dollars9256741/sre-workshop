@@ -6,8 +6,8 @@ A hands-on workshop series covering essential SRE (Site Reliability Engineering)
 
 | Workshop | Duration | Description |
 |----------|----------|-------------|
-| [Docker](docker/) | 2 hours | Docker fundamentals, Dockerfile, and Docker Compose |
-| [CI/CD](cicd/) | 2 hours | GitHub Actions, CI pipeline, release and deployment automation |
+| [Docker](Docker/) | 2 hours | Docker fundamentals, Dockerfile, and Docker Compose |
+| [CI/CD](CI-CD/) | 2 hours | GitHub Actions, CI pipeline, release and deployment automation |
 
 > **Recommended order:** Docker first, then CI/CD — the CI/CD workshop assumes Docker knowledge.
 
@@ -24,10 +24,10 @@ A hands-on workshop series covering essential SRE (Site Reliability Engineering)
 ```
 sre-workshop/
 ├── README.md              # This file
-├── docker/                # Docker workshop
+├── Docker/                # Docker workshop
 │   ├── README.md          # Workshop overview
 │   └── docker-workshop.md # Full teaching material
-└── cicd/                  # CI/CD workshop
+└── CI-CD/                 # CI/CD workshop
     ├── README.md          # Workshop overview
     ├── 01-cicd-intro.md   # CI/CD concepts
     ├── 02-github-actions-basics.md

@@ -123,7 +123,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 ```
 
-> 完整檔案也可以在 `cicd/examples/sample-app/.github/workflows/cd.yml` 找到。
+> 完整檔案也可以在 `CI-CD/examples/sample-app/.github/workflows/cd.yml` 找到。
 
 ### 逐段解說
 

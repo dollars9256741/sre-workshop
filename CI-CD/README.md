@@ -50,7 +50,7 @@ GitHub Environments and Secrets, plus a hands-on deployment example to Fly.io. S
 ## Project Structure
 
 ```
-cicd/
+CI-CD/
 ├── README.md                          # This file
 ├── README.zh-TW.md                    # Chinese version
 ├── 01-cicd-intro.md                   # CI/CD concepts

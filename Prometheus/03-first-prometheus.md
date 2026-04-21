@@ -219,7 +219,7 @@ http_request_duration_seconds_sum 3250.5
 2. 每次有事情發生時，**更新**對應的數字
 3. 開一個 `/metrics` endpoint，讓 Prometheus 來讀
 
-在 `cicd/examples/sample-app/` 裡，這三件事各自對應到：
+在 `CI-CD/examples/sample-app/` 裡，這三件事各自對應到：
 
 | 做什麼 | 在哪個檔案 | 長什麼樣子 |
 |--------|-----------|-----------|

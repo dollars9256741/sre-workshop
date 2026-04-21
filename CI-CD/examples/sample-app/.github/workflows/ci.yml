@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'cicd/examples/sample-app/**'
+      - 'CI-CD/examples/sample-app/**'
       - '.github/workflows/sample-app-ci.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'cicd/examples/sample-app/**'
+      - 'CI-CD/examples/sample-app/**'
       - '.github/workflows/sample-app-ci.yml'
 
 defaults:
   run:
-    working-directory: cicd/examples/sample-app
+    working-directory: CI-CD/examples/sample-app
 
 jobs:
   lint:
@@ -25,12 +25,12 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache-dependency-path: cicd/examples/sample-app/go.sum
+          cache-dependency-path: CI-CD/examples/sample-app/go.sum
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
-          working-directory: cicd/examples/sample-app
+          working-directory: CI-CD/examples/sample-app
 
   test:
     name: Test
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache-dependency-path: cicd/examples/sample-app/go.sum
+          cache-dependency-path: CI-CD/examples/sample-app/go.sum
       - name: Verify dependencies
         run: go mod verify
       - name: Run tests
@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: cicd/examples/sample-app/coverage.out
+          path: CI-CD/examples/sample-app/coverage.out
 
   build:
     name: Build
@@ -62,11 +62,11 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache-dependency-path: cicd/examples/sample-app/go.sum
+          cache-dependency-path: CI-CD/examples/sample-app/go.sum
       - name: Build binary
         run: go build -o bin/app .
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: app-binary
-          path: cicd/examples/sample-app/bin/app
+          path: CI-CD/examples/sample-app/bin/app

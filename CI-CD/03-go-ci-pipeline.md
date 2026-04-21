@@ -23,10 +23,10 @@ Ocean 成功跑完第一個 Hello World workflow 後信心大增。Andrew 看到
 
 ## 範例專案介紹
 
-本章使用一個簡單的 Go HTTP API 伺服器作為範例，放在 `cicd/examples/sample-app/`：
+本章使用一個簡單的 Go HTTP API 伺服器作為範例，放在 `CI-CD/examples/sample-app/`：
 
 ```
-cicd/examples/sample-app/
+CI-CD/examples/sample-app/
 ├── main.go            # HTTP server entry point
 ├── handler.go         # HTTP handler functions
 ├── handler_test.go    # Unit tests
@@ -43,14 +43,14 @@ cicd/examples/sample-app/
 | `/health` | GET | 健康檢查 | `{"status":"ok"}` |
 | `/version` | GET | 版本資訊 | `{"version":"dev"}` |
 
-並在 `handler_test.go` 中用 Go 標準函式庫的 `testing` 和 `net/http/httptest` 寫了單元測試。程式碼細節可以直接打開 `cicd/examples/sample-app/` 查看，這章的重點是幫它建立 CI pipeline。
+並在 `handler_test.go` 中用 Go 標準函式庫的 `testing` 和 `net/http/httptest` 寫了單元測試。程式碼細節可以直接打開 `CI-CD/examples/sample-app/` 查看，這章的重點是幫它建立 CI pipeline。
 
 ### 在本機跑跑看
 
 在開始建 CI 之前，先把這個服務在自己的電腦上跑起來，確認它可以正常運作：
 
 ```bash
-cd cicd/examples/sample-app
+cd CI-CD/examples/sample-app
 go run .
 ```
 
@@ -95,17 +95,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'cicd/examples/sample-app/**'
+      - 'CI-CD/examples/sample-app/**'
       - '.github/workflows/sample-app-ci.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'cicd/examples/sample-app/**'
+      - 'CI-CD/examples/sample-app/**'
       - '.github/workflows/sample-app-ci.yml'
 
 defaults:
   run:
-    working-directory: cicd/examples/sample-app
+    working-directory: CI-CD/examples/sample-app
 
 jobs:
   lint:
@@ -116,12 +116,12 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache-dependency-path: cicd/examples/sample-app/go.sum
+          cache-dependency-path: CI-CD/examples/sample-app/go.sum
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
-          working-directory: cicd/examples/sample-app
+          working-directory: CI-CD/examples/sample-app
 
   test:
     name: Test
@@ -131,7 +131,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache-dependency-path: cicd/examples/sample-app/go.sum
+          cache-dependency-path: CI-CD/examples/sample-app/go.sum
       - name: Verify dependencies
         run: go mod verify
       - name: Run tests
@@ -142,7 +142,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: cicd/examples/sample-app/coverage.out
+          path: CI-CD/examples/sample-app/coverage.out
 
   build:
     name: Build
@@ -153,17 +153,17 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache-dependency-path: cicd/examples/sample-app/go.sum
+          cache-dependency-path: CI-CD/examples/sample-app/go.sum
       - name: Build binary
         run: go build -o bin/app .
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: app-binary
-          path: cicd/examples/sample-app/bin/app
+          path: CI-CD/examples/sample-app/bin/app
 ```
 
-> 這份 workflow 實際放在 workshop repo 的 `.github/workflows/sample-app-ci.yml`（也同步一份在 `cicd/examples/sample-app/.github/workflows/ci.yml` 供參考）。因為 sample-app 是這個 workshop repo 底下的一個子目錄，裡面用到了幾個「子目錄專案」才需要的特殊設定：`paths` 過濾讓 workflow 只在 `cicd/examples/sample-app/**` 變動時觸發、`defaults.run.working-directory` 讓所有 `run:` 指令都跑在 sample-app 子目錄裡、`cache-dependency-path` 指向子目錄的 `go.sum`、artifact 的 `path:` 也要用 repo 相對路徑（因為 `upload-artifact` 不受 `working-directory` 影響）。如果你自己的 Go 專案 repo 就是以 Go 程式碼為根目錄，這些子目錄相關設定都可以拿掉，會更精簡。
+> 這份 workflow 實際放在 workshop repo 的 `.github/workflows/sample-app-ci.yml`（也同步一份在 `CI-CD/examples/sample-app/.github/workflows/ci.yml` 供參考）。因為 sample-app 是這個 workshop repo 底下的一個子目錄，裡面用到了幾個「子目錄專案」才需要的特殊設定：`paths` 過濾讓 workflow 只在 `CI-CD/examples/sample-app/**` 變動時觸發、`defaults.run.working-directory` 讓所有 `run:` 指令都跑在 sample-app 子目錄裡、`cache-dependency-path` 指向子目錄的 `go.sum`、artifact 的 `path:` 也要用 repo 相對路徑（因為 `upload-artifact` 不受 `working-directory` 影響）。如果你自己的 Go 專案 repo 就是以 Go 程式碼為根目錄，這些子目錄相關設定都可以拿掉，會更精簡。
 
 ## 逐段解說
 

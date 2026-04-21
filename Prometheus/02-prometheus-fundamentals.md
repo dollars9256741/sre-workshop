@@ -171,7 +171,7 @@ Prometheus/examples/
     └── provisioning/         # Grafana data sources + dashboard 預載
 ```
 
-示範用的 Go 服務其實在前面的 CI/CD 目錄下（`cicd/examples/sample-app/`），docker-compose.yml 用跨目錄的 build context（`build: ../../cicd/examples/sample-app`）把它帶進來。
+示範用的 Go 服務其實在前面的 CI/CD 目錄下（`CI-CD/examples/sample-app/`），docker-compose.yml 用跨目錄的 build context（`build: ../../CI-CD/examples/sample-app`）把它帶進來。
 
 下一章會深入這個 Go 服務和 `prometheus/prometheus.yml`。
 

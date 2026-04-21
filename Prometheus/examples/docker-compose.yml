@@ -9,7 +9,7 @@ volumes:
 
 services:
   app:
-    build: ../../cicd/examples/sample-app
+    build: ../../CI-CD/examples/sample-app
     environment:
       - PORT=8000
     ports:

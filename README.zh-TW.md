@@ -6,8 +6,8 @@
 
 | 工作坊 | 時長 | 說明 |
 |--------|------|------|
-| [Docker](docker/) | 2 小時 | Docker 基礎、Dockerfile 撰寫、Docker Compose 編排 |
-| [CI/CD](cicd/) | 2 小時 | GitHub Actions、CI pipeline、Release 與部署自動化 |
+| [Docker](Docker/) | 2 小時 | Docker 基礎、Dockerfile 撰寫、Docker Compose 編排 |
+| [CI/CD](CI-CD/) | 2 小時 | GitHub Actions、CI pipeline、Release 與部署自動化 |
 
 > **建議上課順序**：先上 Docker，再上 CI/CD——CI/CD 課程預設學員已具備 Docker 基礎知識。
 
@@ -25,11 +25,11 @@
 sre-workshop/
 ├── README.md              # 英文版 README
 ├── README.zh-TW.md        # 本檔案
-├── docker/                # Docker 工作坊
+├── Docker/                # Docker 工作坊
 │   ├── README.md          # 工作坊總覽（英文）
 │   ├── README.zh-TW.md    # 工作坊總覽（中文）
 │   └── docker-workshop.md # 完整教材
-└── cicd/                  # CI/CD 工作坊
+└── CI-CD/                 # CI/CD 工作坊
     ├── README.md          # 工作坊總覽
     ├── README.zh-TW.md    # 工作坊總覽（中文）
     ├── 01-cicd-intro.md   # CI/CD 概念介紹

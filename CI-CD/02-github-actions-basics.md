@@ -90,7 +90,7 @@ jobs:
           echo "Event: ${{ github.event_name }}"
 ```
 
-每一行的意思我們等一下會在「Workflow 結構元素」一節回頭解釋，現在不用急著看懂。完整檔案也可以在 `cicd/examples/.github/workflows/hello.yml` 找到，直接複製過去也行。
+每一行的意思我們等一下會在「Workflow 結構元素」一節回頭解釋，現在不用急著看懂。完整檔案也可以在 `CI-CD/examples/.github/workflows/hello.yml` 找到，直接複製過去也行。
 
 ### Push 到 GitHub
 
@@ -309,7 +309,7 @@ jobs:
         run: jq -r .description repo.json
 ```
 
-> 完整檔案也可以在 `cicd/examples/.github/workflows/repo-info.yml` 找到，直接複製過去即可。
+> 完整檔案也可以在 `CI-CD/examples/.github/workflows/repo-info.yml` 找到，直接複製過去即可。
 
 push 上去之後到 Actions 分頁看，這次的 workflow run 旁邊會變成紅色叉叉：
 
