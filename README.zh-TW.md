@@ -1,54 +1,130 @@
 # SRE Workshop
 
-涵蓋 SRE（Site Reliability Engineering）核心技能的實戰工作坊系列，包含 Docker 容器化、GitHub Actions CI/CD 自動化，以及 Prometheus 監控。
+[English](README.md) · **繁體中文**
+
+涵蓋 SRE（Site Reliability Engineering）核心技能的實戰工作坊系列，包含 Docker 容器化、GitHub Actions CI/CD 自動化、Prometheus 監控，最後用一個綜合練習把三者串起來。
 
 ## 工作坊列表
 
 | 工作坊 | 時長 | 說明 |
 |--------|------|------|
-| [Docker](Docker/) | 2 小時 | Docker 基礎、Dockerfile 撰寫、Docker Compose 編排 |
-| [CI/CD](CI-CD/) | 2 小時 | GitHub Actions、CI pipeline、Release 與部署自動化 |
-| [Prometheus](Prometheus/) | 1 小時 | Metrics 收集、告警設定、Grafana 儀表板 |
+| [Docker](Docker/) | 90 分鐘 | Container、Docker Compose、Dockerfile |
+| [CI/CD](CI-CD/) | 100 分鐘 | GitHub Actions、CI pipeline、self-hosted runner 部署 |
+| [Prometheus](Prometheus/) | 60 分鐘 | Metrics 收集、告警設定、Discord 通知 |
+| [最後練習](final-exercise/) | 25 分鐘 | 透過 CI/CD 部署服務、Prometheus 抓 metric、告警到 Discord |
 
-> **建議上課順序**：Docker → CI/CD → Prometheus，後續課程預設學員已具備前面課程的知識。
+## 課前檢核清單
 
-## 課前準備
+工作坊前請跑過一遍。每個項目下面都有安裝方式與驗證指令。
 
-- [ ] **Git** — `git --version`
-- [ ] **Go 1.22+** — `go version`
-- [ ] **Docker** — `docker --version`
-- [ ] **Docker Compose** — `docker compose version`
-- [ ] **GitHub 帳號** — [github.com](https://github.com)
-- [ ] **Discord 帳號** — 用於接收 Prometheus 告警通知（選用）
-- [ ] **程式編輯器** — 推薦使用 [VS Code](https://code.visualstudio.com/)（搭配 YAML 擴充套件）
+- [ ] Git
+- [ ] Go 1.24+
+- [ ] Docker（內含 Docker Compose）
+- [ ] make
+- [ ] VS Code（含 YAML 擴充套件）
+- [ ] GitHub 帳號
+- [ ] Docker Hub 帳號
+- [ ] Discord 帳號
+
+**Windows 使用者**：所有操作都在 **WSL 2** 裡面做。先裝好 WSL，之後每個工具都照「Windows (WSL)」那條路線走。
+用系統管理員身份打開 PowerShell 以安裝 WSL 2：
+
+```powershell
+wsl --install
+```
+
+### 安裝與驗證
+
+<details>
+<summary><b>Git</b></summary>
+
+- **macOS**：`brew install git`（或第一次執行 `git` 時讓 Xcode CLI tools 自動裝）
+- **Windows (WSL)**：`sudo apt update && sudo apt install -y git`
+
+驗證：
+```bash
+git --version
+# git version 2.x
+```
+
+</details>
+
+<details>
+<summary><b>Go 1.24+</b></summary>
+
+- **macOS**：`brew install go`
+- **Windows (WSL)**：`sudo snap install go --classic` — 或從 [go.dev/dl](https://go.dev/dl/) 下載安裝
+
+驗證：
+```bash
+go version
+# go version go1.24.x darwin/arm64
+```
+
+</details>
+
+<details>
+<summary><b>Docker（內含 Docker Compose）</b></summary>
+
+- **macOS**：`brew install --cask orbstack`，然後啟動 OrbStack
+- **Windows (WSL)**：安裝 [Docker Desktop](https://www.docker.com/products/docker-desktop/)，並在 *Settings → Resources → WSL Integration* 啟用 WSL 2 整合。`docker` 指令就可以在 Ubuntu WSL 裡直接用。
+
+驗證：
+```bash
+docker --version
+# Docker version 27.x, build ...
+
+docker compose version
+# Docker Compose version v2.x
+```
+
+</details>
+
+<details>
+<summary><b>make</b></summary>
+
+- **macOS**：Xcode CLI tools 內建，如果沒有請執行 `xcode-select --install`
+- **Windows (WSL)**：`sudo apt install -y make`
+
+驗證：
+```bash
+make --version
+# GNU Make 4.x
+```
+
+</details>
+
+<details>
+<summary><b>VS Code</b></summary>
+
+- **macOS**：`brew install --cask visual-studio-code` — 或從 [code.visualstudio.com](https://code.visualstudio.com/) 下載
+- **Windows**：從 [code.visualstudio.com](https://code.visualstudio.com/) 下載，並安裝 [WSL 擴充套件](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)，這樣才能直接編輯 WSL 裡的檔案
+
+裝好之後從 VS Code 的 Extensions 面板再裝一個 **YAML** 擴充套件。
+
+</details>
+
+<details>
+<summary><b>GitHub / Docker Hub / Discord 帳號</b></summary>
+
+註冊即可（不需安裝）：
+
+- **GitHub** — [github.com/signup](https://github.com/signup)
+- **Docker Hub** — [hub.docker.com/signup](https://hub.docker.com/signup)
+- **Discord** — [discord.com/register](https://discord.com/register)
+
+</details>
 
 ## 專案結構
 
 ```
 sre-workshop/
-├── README.md              # 英文版 README
-├── README.zh-TW.md        # 本檔案
-├── Docker/                # Docker 工作坊
-│   ├── README.md          # 工作坊總覽（英文）
-│   ├── README.zh-TW.md    # 工作坊總覽（中文）
-│   └── docker-workshop.md # 完整教材
-├── CI-CD/                 # CI/CD 工作坊
-│   ├── README.md          # 工作坊總覽
-│   ├── README.zh-TW.md    # 工作坊總覽（中文）
-│   ├── 01-cicd-intro.md   # CI/CD 概念介紹
-│   ├── 02-github-actions-basics.md
-│   ├── 03-go-ci-pipeline.md
-│   ├── 04-deployment.md
-│   ├── examples/          # 範例 Go 應用程式
-│   └── exercises/         # 實作練習
-└── Prometheus/            # Prometheus 工作坊
-    ├── README.md          # 工作坊總覽
-    ├── 01-monitoring-intro.md
-    ├── 02-prometheus-fundamentals.md
-    ├── 03-first-prometheus.md
-    ├── 04-alerting.md
-    ├── 05-full-monitoring-stack.md
-    └── examples/          # 監控系統設定檔
+├── README.md               # 英文版 README
+├── README.zh-TW.md         # 本檔案
+├── Docker/                 # Docker 工作坊
+├── CI-CD/                  # CI/CD 工作坊
+├── Prometheus/             # Prometheus 工作坊
+└── final-exercise/         # 整天課程結束後的綜合練習
 ```
 
 ## 授權
