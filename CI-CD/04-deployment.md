@@ -1,13 +1,13 @@
-# 04 — 部署到雲端平台
+# 04 — 自動化部署
 
-Ocean 的 CI pipeline 跑得很順。Andrew 興奮地說：「那接下來就是把程式部署到伺服器上讓大家用了吧？」Ocean 點點頭，但又有點緊張，畢竟部署到正式環境可不能出差錯。Snow 說：「別擔心，我們可以設計一套安全的部署流程，先部署到測試環境驗證，確認沒問題再上正式環境。」
+CI 確保程式碼品質之後，這章把程式部署到實際的伺服器讓使用者看到新版本。採兩段式做法：先用 GitHub-hosted runner build image 推到 GHCR，再用 self-hosted runner 把 image pull 下來重啟容器。
 
 ## 目錄
 
 - [學習目標](#學習目標)
+- [什麼是 CD？](#什麼是-cd)
 - [Environments 與 Secrets](#environments-與-secrets)
-- [實戰：部署到 Fly.io](#實戰部署到-flyio)
-- [補充：多環境部署（Staging → Production）](#補充多環境部署staging--production)
+- [實戰：用 self-hosted runner 部署](#實戰用-self-hosted-runner-部署)
 - [結語：完整 CI/CD 全景與工作坊回顧](#結語完整-cicd-全景與工作坊回顧)
 
 
@@ -17,7 +17,15 @@ Ocean 的 CI pipeline 跑得很順。Andrew 興奮地說：「那接下來就是
 
 - 理解 **GitHub Environments** 與 **Secrets** 的概念和設定方式
 - 區分 **環境變數** 與 **Secrets** 的使用時機
-- 使用 GitHub Actions 部署應用到 **Fly.io**
+- 用 GitHub Actions 把 image push 到 **GHCR**（GitHub Container Registry）
+- 用 **self-hosted runner** 把 image pull 下來部署到自己的伺服器
+
+
+## 什麼是 CD？
+
+**部署（Deployment）** 就是把寫好的程式搬到實際運行的環境上，讓使用者可以用到新版本。CI 確保程式碼品質之後，CD 負責自動完成這件事：把通過檢查的程式碼打包成可以在伺服器上跑的格式（像是 Docker image），部署到對應的環境上，再執行後續的處理（像是通知團隊、更新監控）。從 push 程式碼到使用者看到新功能，整個過程全自動，不需要人工介入。
+
+這種模式要求你對自動化測試有非常高的信心，因為沒有人會在中間攔一下，測試就是你唯一的安全網。
 
 
 ## Environments 與 Secrets
@@ -39,7 +47,7 @@ GitHub 在 Settings 裡有**兩個**可以放 secret 的地方，對新手常造
 | **Repository secret** | Settings → Secrets and variables → Actions | 所有 workflow、所有 job 都可以讀到。最簡單的預設 |
 | **Environment secret** | Settings → Environments → `<env>` → Secrets | 只有明確宣告 `environment: <name>` 的 job 才能讀到。可以搭配 protection rules |
 
-兩種在 workflow 裡都是用 `${{ secrets.XXX }}` 讀取。本章主要只會用一個 `FLY_API_TOKEN`，放 repository secret 就夠了；如果你想讓 production 需要手動核准再部署，才需要改用 environment secret 並設 protection rules。
+兩種在 workflow 裡都是用 `${{ secrets.XXX }}` 讀取。本章 push image 到 GHCR 用 GitHub 自動產生的 `GITHUB_TOKEN`，不用自己設 secret；但實務上若部署需要外部 API key、資料庫密碼，就會放在這裡。如果你想讓 production 需要手動核准再部署，可以改用 environment secret 並設 protection rules。
 
 ### 如何設定 Repository Secret
 
@@ -65,199 +73,168 @@ env:
 ```
 
 
-## 實戰：部署到 Fly.io
+## 實戰：用 self-hosted runner 部署
 
-### 為什麼選 Fly.io？
+### 為什麼用 self-hosted runner？
 
-[Fly.io](https://fly.io) 是一個開發者友善的容器平台，特別適合部署後端應用：
+**Self-hosted runner** 是你自己準備一台機器、安裝 GitHub Actions runner 程式並註冊到 repo，之後 workflow 就可以指定跑在這台機器上。跟 GitHub-hosted runner 對照：
 
-- **讀你的 Dockerfile 就好**：不需要自己管 registry，`flyctl deploy` 會自己建置和推送
-- **一個指令完成部署**：設定檔 `fly.toml` 產生後，後續每次部署就是 `flyctl deploy`
-- **免費額度足夠實驗**：可以跑幾個小型 VM
-- **全球邊緣節點**：自動把應用部署到離使用者最近的區域
+| | GitHub-hosted | Self-hosted |
+|---|---|---|
+| 機器來源 | GitHub 提供，每次都是新的 | 自己的伺服器（VM、實體機都行） |
+| 網路 | 公網 IP，連不到內部資源 | 在你的網段內，可直接接觸內部服務 |
+| 費用 | 公開 repo 免費 | 機器費用自己出 |
 
-對我們這個 Go HTTP API 範例來說，Fly.io 是最輕量的選擇。
+CD 用 self-hosted 的最大理由是「**部署目標就在 runner 同一台（或同內網）**」。要部署到系辦的伺服器，從 GitHub-hosted runner 連回來要開 SSH 或 VPN，麻煩又有資安風險；直接在那台伺服器上跑 runner，部署就是執行本機的 docker 指令。
 
 ### 前置準備
 
-在設定 workflow 之前，先在本機完成一次性的 Fly.io 初始化。**注意 Fly.io 目前要求所有新帳號綁定信用卡**（即使只用免費額度），所以這一步得有信用卡才能完成。如果你不方便提供，可以只讀這一章的 workflow 範例學觀念，不一定要真的跑起來。
+本章假設：
 
-1. 到 [fly.io](https://fly.io) 註冊帳號，並在 Billing 頁面綁定信用卡
-2. 安裝 `flyctl`：[官方安裝指南](https://fly.io/docs/hands-on/install-flyctl/)
-3. 本機登入：`flyctl auth login`
-4. 在專案根目錄執行 `flyctl launch`。這是一個**互動式指令**，會問你一連串問題：
-   - **App name**：Fly.io 全域唯一，常見名稱會衝突。建議用 `<你的名字>-sample-app` 之類的命名避免重複
-   - **Region**：選離你最近的，例如 `nrt`（東京）或 `hkg`（香港）
-   - **Postgres / Redis**：選 **No**（我們用不到）
-   - **Deploy now?**：可以選 **No**，我們會用 GitHub Actions 部署
-5. 執行完後會在專案根目錄產生 `fly.toml` 設定檔，**記得 `git add fly.toml` 並 commit**，否則 CI 找不到它
-6. 產生 CI 用的 API token：`flyctl tokens create deploy`，把輸出的那串 token 複製起來
-7. 把 token 存到 GitHub Repository Secret，名稱 `FLY_API_TOKEN`（前面 [Secret 放哪裡](#secret-放哪裡repository-vs-environment) 有步驟）
+1. 你的 repo 已經有一個 self-hosted runner，標籤為 `self-hosted`（工作坊現場會提供共用 runner）
+2. 那台 runner 機器上已經裝好 Docker
+3. 你的 GHCR image 設為 public（GitHub 上 Settings → Packages，這樣 pull 不用認證）
 
 ### 部署 Workflow
 
 請在你的專案中建立 `.github/workflows/cd.yml`：
 
 ```yaml
-name: Deploy to Fly.io
+name: Build and Deploy
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  deploy:
-    name: Deploy
+  build-and-push:
+    name: Build & Push Image
     runs-on: ubuntu-latest
-    environment: production
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy:
+    name: Deploy to Server
+    needs: build-and-push
+    runs-on: [self-hosted]
+    environment: production
+    steps:
+      - name: Pull latest image
+        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Stop and remove old container
+        run: |
+          docker stop sample-app || true
+          docker rm sample-app || true
+
+      - name: Run new container
+        run: |
+          docker run -d \
+            --name sample-app \
+            -p 8080:80 \
+            --restart unless-stopped \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 ```
-
-> 完整檔案也可以在 `CI-CD/examples/sample-app/.github/workflows/cd.yml` 找到。
 
 ### 逐段解說
 
-**觸發條件**
+**兩段式設計**
+
+`build-and-push` 用 GitHub-hosted runner（規格穩定、不佔自己機器資源）負責建置 image 並推到 GHCR；`deploy` 用 self-hosted runner（直接在部署機器上）pull image、重啟容器。
+
+**Build & Push Job**
 
 ```yaml
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
 ```
 
-- `push to main`：程式碼合併到 `main` 時自動部署
-- `workflow_dispatch`：也允許在 GitHub UI 手動觸發，需要重新部署但不想改程式碼時很實用
-
-**Environment**
+要 push image 到 GHCR 必須明確要 `packages: write`。預設權限不夠用。
 
 ```yaml
+- uses: docker/login-action@v3
+  with:
+    registry: ${{ env.REGISTRY }}
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+`GITHUB_TOKEN` 是 GitHub Actions 為每個 workflow run 自動產生的 token，搭配前面的 `permissions` 取得對應權限。push image 不用自己生 PAT。
+
+```yaml
+- uses: docker/build-push-action@v5
+  with:
+    context: .
+    push: true
+    tags: |
+      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+```
+
+讀 repo 根目錄的 `Dockerfile` build 出 image，同時打兩個 tag：
+
+- `latest`：方便 deploy 直接用
+- `${{ github.sha }}`：留下這次 commit 的版本，未來想 rollback 才有依據
+
+**Deploy Job**
+
+```yaml
+needs: build-and-push
+runs-on: [self-hosted]
 environment: production
 ```
 
-告訴 GitHub 這個 job 使用 `production` 環境。GitHub 第一次看到沒建過的 environment 會自動建立，所以你**不需要事先設定**這個 environment 也能跑。但如果你之後想要加「production 部署必須手動核准」這類保護規則，就可以到 **Settings → Environments → production** 裡勾 **Required reviewers**，之後 workflow 執行到這個 job 會自動暫停等待核准。
-
-**Deploy 步驟**
-
-```yaml
-- name: Setup flyctl
-  uses: superfly/flyctl-actions/setup-flyctl@master
-
-- name: Deploy to Fly.io
-  run: flyctl deploy --remote-only
-  env:
-    FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-```
-
-這兩個 step 就是全部了：
-
-1. `setup-flyctl` 把 `flyctl` 指令裝到 runner 上
-2. `flyctl deploy --remote-only` 讀取 repo 根目錄的 `fly.toml` 和 `Dockerfile`，在 Fly.io 的 builder 上建置 image 並部署。`--remote-only` 代表不在 runner 本地建置，省時也省資源
-
-`FLY_API_TOKEN` 透過環境變數傳遞給 `flyctl`，它會自動識別並用來認證。
-
-
-## 補充：多環境部署（Staging → Production）
-
-> 本節是進階補充。前面 Fly.io 單環境部署的流程已經足夠完成一個基本 CD pipeline；這裡示範在真實團隊中常見的「先 staging、再 production」兩階段流程，有興趣再看即可。
-
-### 為什麼需要多環境？
-
-在正式的開發流程中，程式碼通常會先部署到 **staging 環境** 進行驗證，確認沒問題後再部署到 **production 環境**。
-
-```
-┌────────┐     ┌────────────┐     ┌──────────────┐
-│  Code  │────▶│  Staging   │────▶│  Production  │
-│  Merge │     │  (自動)     │     │  (手動核准)   │
-└────────┘     └────────────┘     └──────────────┘
-```
-
-Fly.io 的做法是為每個環境建立獨立的 app（例如 `myapp-staging` 和 `myapp-prod`），並使用不同的 `fly.toml` 或用 `--config` / `--app` 參數切換。
-
-### Staging + Production 的 Workflow 範例
+- `needs: build-and-push`：image 沒 push 完就不用 deploy
+- `runs-on: [self-hosted]`：用標籤指定要跑在 self-hosted runner，這台 runner 就在部署目標機器上
+- `environment: production`：可以接 protection rules（例如手動核准），跟前面 [Environments 與 Secrets](#environments-與-secrets) 提到的設定方式一樣
 
 ```yaml
-name: Deploy Pipeline
+- name: Pull latest image
+  run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-on:
-  push:
-    branches: [main]
+- name: Stop and remove old container
+  run: |
+    docker stop sample-app || true
+    docker rm sample-app || true
 
-jobs:
-  # ──────────────────────────────────────
-  # Stage 1: Deploy to Staging (automatic)
-  # ──────────────────────────────────────
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy to Staging
-        run: flyctl deploy --remote-only --app myapp-staging
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
-      - name: Smoke test
-        run: |
-          for i in 1 2 3 4 5; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://myapp-staging.fly.dev/health)
-            if [ "$STATUS" = "200" ]; then
-              echo "Health check passed!"
-              exit 0
-            fi
-            echo "Attempt $i: got ${STATUS}, retrying in 10s..."
-            sleep 10
-          done
-          echo "::error::Smoke test failed"
-          exit 1
-
-  # ──────────────────────────────────────────
-  # Stage 2: Deploy to Production (manual approval)
-  # ──────────────────────────────────────────
-  deploy-production:
-    name: Deploy to Production
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy to Production
-        run: flyctl deploy --remote-only --app myapp-prod
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+- name: Run new container
+  run: |
+    docker run -d \
+      --name sample-app \
+      -p 8080:80 \
+      --restart unless-stopped \
+      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 ```
 
-### 關鍵設計
+三個動作：拉新 image → 砍舊 container → 跑新的。
 
-1. **Staging 自動部署**：push 到 `main` 後自動部署到 staging
-2. **Smoke Test**：staging 部署完成後做一次健康檢查；用 retry 迴圈避免因為新 instance 還沒完全啟動就誤判失敗
-3. **Production 手動核准**：`environment: production` 設定了 protection rules，workflow 會暫停等待核准
-4. **`needs: deploy-staging`**：production 一定要在 staging 成功後才會執行
-
-### 設定 Environment Protection Rules
-
-要讓 production 部署需要核准，在 GitHub 上設定：
-
-1. **Settings** → **Environments** → 點擊 **production**
-2. 勾選 **Required reviewers**，加入需要核准的人
-3. 可選：設定 **Wait timer**（例如 5 分鐘冷靜期）
-
-設定完成後，當 workflow 執行到 `deploy-production` 時會暫停，核准者需要到 Actions 頁面點擊 **Approve and deploy** 才會繼續。
+- `|| true`：第一次部署沒有舊 container 時，`stop` / `rm` 會失敗，但不該擋住流程
+- `--restart unless-stopped`：伺服器重開機後容器自動起來
 
 
 ## 結語：完整 CI/CD 全景與工作坊回顧
@@ -266,7 +243,7 @@ jobs:
 
 - **第二章**：寫了第一個 workflow，push 上去看它跑，認識 workflow / job / step / runner 的關係，也刻意製造一次失敗看 debug 流程
 - **第三章**：把 lint、test、build 三個 job 串成真正的 Go CI。`lint` 和 `test` 透過 `needs` 平行執行、`build` 等兩者都過才啟動；`golangci-lint` 守程式碼品質，`go test -race -coverprofile` 抓 race condition 並收 coverage，`upload-artifact` 把產物上傳方便後續取用。同時也看到 `on: pull_request` 怎麼在 merge 前先攔一次
-- **第四章**：把建好的東西部署到 Fly.io，用 GitHub Environments 管 secrets，一個 `flyctl deploy` 完成部署；補充小節進一步示範 staging 自動部署加 smoke test、production 手動核准的兩階段流程
+- **第四章**：用兩段式 workflow 把建好的東西部署上線。GitHub-hosted runner 負責 build image 並 push 到 GHCR；self-hosted runner 負責 pull image、重啟容器。`environment: production` 還可以接手動核准等 protection rules
 
 拼起來，整條從寫程式碼到部署上線的自動化長這樣：
 
@@ -292,22 +269,21 @@ jobs:
 ┌───────────────────────────────────────────────────────┐
 │                   CD Pipeline (ch04)                  │
 │                                                       │
-│                  ┌──────────────┐                     │
-│                  │   Deploy     │                     │
-│                  │  to Fly.io   │                     │
-│                  └──────────────┘                     │
+│       ┌──────────────────┐    ┌──────────────────┐    │
+│       │   Build & Push   │───▶│  Pull & Restart  │    │
+│       │      to GHCR     │    │  (self-hosted)   │    │
+│       └──────────────────┘    └──────────────────┘    │
 │                                                       │
-│  （進階：staging → smoke test → production 手動核准） │
 └───────────────────────────────────────────────────────┘
 ```
 
-回頭看第一章 Ocean 和 Andrew 那些抱怨：
+回頭看第一章那些痛點：
 
 | 原本的痛點 | 現在怎麼解 |
 |-----------|-----------|
 | 手動測試每次都花好久 | push 後 CI 自動跑完 lint + test + build |
 | 合併之後才發現壞掉 | PR 階段就先跑一次 CI，壞掉的改動合不進來 |
-| 部署又忘了步驟 | `flyctl deploy` 一個指令，前置步驟寫進 workflow 裡跑 |
+| 部署又忘了步驟 | self-hosted runner 上跑 `docker pull` + `docker run`，前置步驟寫進 workflow 裡 |
 | 誰都可以亂部署 production | Environment protection 可以強制手動核准 |
 | API key 散落在各處 | 統一放進 GitHub Secrets，log 自動遮蔽 |
 
@@ -317,7 +293,8 @@ jobs:
 
 - [GitHub Actions 官方文件](https://docs.github.com/en/actions)
 - [Awesome Actions](https://github.com/sdras/awesome-actions)，社群整理的 Actions 清單
-- [Fly.io Docs](https://fly.io/docs/)
+- [Working with the Container registry (GitHub Docs)](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+- [About self-hosted runners (GitHub Docs)](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners)
 - [The Twelve-Factor App](https://12factor.net/)
 - [Google SRE Book](https://sre.google/sre-book/table-of-contents/)
 

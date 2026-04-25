@@ -219,7 +219,7 @@ jobs:
 | `github.actor` | 觸發事件的使用者 | `octocat` |
 | `github.event_name` | 觸發的事件名稱 | `push`、`pull_request` |
 
-Context 就像是 GitHub Actions 提供的內建變數集合，除了 `github` 之外還有 `secrets` 用來取機密資訊（例如 API key、token）。這些後面章節用到時會詳細介紹，例如 04 章部署到 Fly.io 就會用到 `secrets.FLY_API_TOKEN`。
+Context 就像是 GitHub Actions 提供的內建變數集合，除了 `github` 之外還有 `secrets` 用來取機密資訊（例如 API key、token）。這些後面章節用到時會詳細介紹，例如 04 章部署 push image 到 GHCR 就會用到 `secrets.GITHUB_TOKEN`。
 
 ### 6. Runner
 
