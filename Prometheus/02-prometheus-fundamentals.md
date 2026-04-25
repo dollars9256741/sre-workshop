@@ -9,13 +9,16 @@
   - [Prometheus 是什麼？ (pruh·mee·thee·uhs)](#prometheus-是什麼-pruhmeetheeuhs)
   - [Pull-based vs. Push-based](#pull-based-vs-push-based)
     - [Pull 的優勢](#pull-的優勢)
+    - [Prometheus 不做哪些事？](#prometheus-不做哪些事)
   - [系統架構](#系統架構)
     - [Core Components](#core-components)
     - [架構圖](#架構圖)
+      - [一個被監控的target可以是](#一個被監控的target可以是)
     - [流程](#流程)
+  - [](#)
   - [Time Series 資料模型](#time-series-資料模型)
     - [什麼是 Time Series？](#什麼是-time-series)
-    - [資料的四個組成部分](#資料的四個組成部分)
+    - [資料的組成部分](#資料的組成部分)
   - [把 Prometheus 跑起來](#把-prometheus-跑起來)
     - [事前準備](#事前準備)
     - [Step 1：/examples 裡有什麼？](#step-1examples-裡有什麼)
@@ -63,7 +66,16 @@ Pull-based（Prometheus）:
 
 * Pull-based 就像醫生每 30 分鐘固定巡房一次（主動檢查）
 * Push-based 就像等病人按鈴才去看（被動等待）
-> 醫生巡房的好處是即使病人昏迷了（服務掛了），醫生走到病房就知道出問題了
+
+---
+### Prometheus 不做哪些事？
+Prometheus 主要針對基於數值metrics（time series）的監控，並具備簡單的架構與明確的警報規則。
+
+它不解決以下問題：
+* 日誌 (logs) 或個別事件 (events)（帶有timestamp且詳細的個別事件紀錄）的儲存與處理
+* 追蹤 (traces)（追蹤單一使用者請求在多個系統間的生命週期）的儲存與處理
+* 基於 Machine learning 或 AI 的異常偵測
+* 可水平擴展的叢集儲存 (clustered storage)
 
 ---
 
@@ -71,7 +83,7 @@ Pull-based（Prometheus）:
 
 ### Core Components
 
-我們的 monitoring 系統由四個元件組成，每個元件各司其職：
+我們今天要介紹的 monitoring 系統由四個元件組成:
 
 | 元件 | 負責什麼 | 類比 |
 |------|---------|------|
@@ -83,17 +95,13 @@ Pull-based（Prometheus）:
 ### 架構圖
 
 ![alt text](./assets/prom_arch.png)
+#### 一個被監控的target可以是
+* An **Instrumented application**：可以直接被追蹤並暴露關於自身指標的應用程式
+* An **Exporter**: 這是一種middleware，負責將現有系統（例如：資料庫伺服器、Linux 主機或網路設備）的指標轉換或生成為 Prometheus的指標expose的格式
+---
 
 ### 流程
-
-```
-蒐集 (Collect) → 評估 (Evaluate) → 告警 (Alert) → 通知 (Notify) → 視覺化 (Visualize)
-    │                  │                │               │                 │
- Prometheus       Prometheus      Alertmanager    Alertmanager        Grafana
- (scrape)         (alert rules)   (routing)       (Discord/Email)    (dashboards)
-```
-
-
+![alt text](./assets/prometheus-pipeline.svg)
 ---
 
 ## Time Series 資料模型
@@ -109,16 +117,15 @@ http_requests_total{service="api", env="prod"} @ 14:01:00 = 1089
 http_requests_total{service="api", env="prod"} @ 14:01:30 = 1120
 ```
 
-如果把它畫成圖，就是一條隨時間變化的曲線。
 
-### 資料的四個組成部分
-
-每一筆 time series 資料包含四個部分：
+### 資料的組成部分
+![alt](./assets/prometheus-datamodel.svg)
+每一筆 time series 資料包含三個部分：
 
 ```
-http_requests_total{service="api", env="prod"} @ 14:00:00 = 1000
+http_requests_total{service="api", env="prod"} @ 14:00:00  =  1000
 └──────┬─────────┘ └──────────┬───────────┘   └─────┬────┘   └─┬─┘
-   Metric Name            Labels              Timestamp      Value
+   Metric Name            Labels              Sample (Timestamp + Value)
 ```
 
 | 組成部分 | 說明 | 範例 |
@@ -138,7 +145,7 @@ http_requests_total{service="api", env="prod"} @ 14:00:00 = 1000
 
 ### 事前準備
 
-在 Docker workshop 中已經安裝了 Docker、Docker Compose、git。確認它們能正常使用：
+在 Docker 課程中已經安裝了 Docker、Docker Compose、git。確認它們能正常使用：
 
 ```bash
 docker --version
