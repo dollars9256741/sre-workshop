@@ -41,7 +41,7 @@ Target architecture: repo → GitHub Actions → self-hosted runner → `docker 
 ### Part 2 — Wire up CD and trigger a real alert (10 min)
 
 1. Following the CI/CD workshop's ch04, fill in the missing CD job (self-hosted runner + `docker run`).
-2. Push; watch the pipeline turn green on GitHub Actions.
+2. Push your assigned `student-<ID>` branch; watch the pipeline turn green on GitHub Actions.
 3. Hit `/crash` on the deployed service.
 4. Wait for the alert to fire; check Discord for the notification.
 

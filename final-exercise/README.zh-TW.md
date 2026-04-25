@@ -2,50 +2,50 @@
 
 ## 課程簡介
 
-25 分鐘的綜合練習，把 Docker、CI/CD、Prometheus 三項技能串在一起。你會透過 GitHub Actions 把服務部署到社辦機器，把 metric 吐給 Prometheus，並在服務壞掉時收到 Discord 告警。
+25 分鐘的綜合練習，把 Docker、CI/CD、Prometheus 三項技能串在一起。你會透過 GitHub Actions 把服務部署到 SDC 機器，把 metric 吐給 Prometheus，並在服務壞掉時收到 Discord 告警。
 
 > **練習本體在另一個 repo：** [Ocean1029/sre-workshop-capstone](https://github.com/Ocean1029/sre-workshop-capstone)。
 >
-> 那邊才是你要 clone、改、push 的 repo。這個資料夾只是給講師和看主 repo 的人一份說明。
+> 那個 repo 才是你會 clone、改、push 的對象。這個目錄只放給講師跟看 workshop 主 repo 的人看的簡介。
 
-**capstone repo 已經包含：**
+**capstone repo 提供：**
 
-- 服務的 source code 和 Dockerfile
-- 大部分的 GitHub Actions workflow（CI 完整，CD 還缺一塊）
-- Prometheus scrape 設定和 alert rule
-- Part 1 本地環境用的 `docker-compose.yml`
+- 服務程式碼與 Dockerfile
+- 大部分的 GitHub Actions workflow（CI 完整、CD 留 TODO 給你填）
+- Prometheus scrape 設定與告警規則
+- Part 1 本機跑的 `docker-compose.yml`
 
-**社辦機器上已經準備好：**
+**SDC 機器上已經跑著：**
 
 - GitHub self-hosted runner
-- Prometheus 和 Alertmanager（Alertmanager 已經設定好對應的 Discord 頻道）
+- Prometheus 與 Alertmanager（Alertmanager 已經接好 Discord channel）
 
-## 適用對象
+## 適合誰
 
-- 已經上完當天的 Docker、CI/CD、Prometheus 三個工作坊
-- 準備好把三個部分合在一起實際跑一次
+- 已經完成今天上半天的 Docker、CI/CD、Prometheus 三個 workshop
+- 想把三塊兜起來實際走一遍
 
-## 練習流程
+## 流程
 
-### Part 0 — 介紹練習（5 分鐘）
+### Part 0 — 走過一次架構（5 分鐘）
 
-目標架構：repo → GitHub Actions → self-hosted runner → 在社辦機器上 `docker run` → Prometheus scrape → Alertmanager → Discord。
+目標架構：repo → GitHub Actions → self-hosted runner → SDC 機器上 `docker run` → Prometheus scrape → Alertmanager → Discord。
 
-### Part 1 — 在本地跑起來（10 分鐘）
+### Part 1 — 在本機跑起來（10 分鐘）
 
-1. `docker compose up` 在本地 build 並啟動服務。
-2. 確認 compose 裡面的 Prometheus 有成功 scrape 到服務。
-3. 打開 Prometheus UI 找到服務的 metric。
-4. 打 `/crash` endpoint，觀察 metric 次數變化。
+1. `docker compose up` 把服務跟 Prometheus 一起跑起來。
+2. 確認 Prometheus 抓得到服務的 metric。
+3. 打開 Prometheus UI，找服務的 metric。
+4. 打 `/crash` endpoint，看 counter 增加。
 
-### Part 2 — 補完 CD，觸發真正的告警（10 分鐘）
+### Part 2 — 接上 CD，觸發一次真的告警（10 分鐘）
 
-1. 參考 CI/CD 工作坊 ch04 的做法，把 CD job 缺的那一塊補齊（self-hosted runner + `docker run`）。
-2. Push 上去，在 GitHub Actions 看到綠勾勾就代表部署成功。
-3. 打已部署服務的 `/crash` endpoint。
-4. 等告警觸發，到 Discord 頻道確認有收到通知。
+1. 照著 CI/CD workshop ch04 的做法，把缺少的 CD job 補完（self-hosted runner + `docker run`）。
+2. 在分到的 `student-<ID>` branch 上 push；到 GitHub Actions 看 pipeline 跑綠。
+3. 打部署後的 `/crash`。
+4. 等告警觸發，到 Discord 看通知有沒有進來。
 
-## 開始練習
+## 開始
 
 ```bash
 git clone https://github.com/Ocean1029/sre-workshop-capstone.git
@@ -53,4 +53,4 @@ cd sre-workshop-capstone
 docker compose up --build
 ```
 
-完整的步驟指引在 capstone repo 的 [README](https://github.com/Ocean1029/sre-workshop-capstone/blob/main/README.zh-TW.md#%E7%B7%B4%E7%BF%92%E6%B5%81%E7%A8%8B)。
+完整步驟在 capstone repo 的 [README](https://github.com/Ocean1029/sre-workshop-capstone#flow)。
