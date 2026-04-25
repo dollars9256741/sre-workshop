@@ -32,6 +32,10 @@ Open PowerShell as administrator to install WSL 2:
 ```powershell
 wsl --install
 ```
+Run the following command to re-enter WSL after restarting PowerShell:
+```powershell
+wsl
+```
 
 ### Install & verify
 
